@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<folder name="Primes"><service name="Expr" provision="expr"><prop name="expr.src" type="text/x-erlang"><![CDATA[NextDiv = fun
+  (2) -> 3;
+  (Div) -> Div + 2
+end.]]></prop></service><service name="Sequencer" provision="sequencer"/><field name="NO"/><field name="YES"/><field name="MAYBE"/><field name="n" type="integer"/><field name="div" type="integer"/><mix name="Mix"><solicit name="CheckPrime" service="Sequencer" fields="n"><response name="Yes" fields="YES"/><response name="No" fields="NO"/></solicit><request name="FirstDivisor" service="Expr" fields="n"><prop name="expr.bind.out" Div="div"/><prop name="expr.src" type="text/plain"><![CDATA[Div = 2,
+"Ok".]]></prop><reply name="Ok" fields="div"/></request><request name="Test" service="Expr" fields="div n"><prop name="expr.bind.in" Div="div" N="n"/><prop name="expr.src" type="text/plain"><![CDATA[case Div * Div > N of
+  true ->
+    "Yes";
+  false ->
+    case N rem Div of
+      0 ->
+        "No";
+      _Otherwise ->
+        "Maybe"
+    end
+ end.]]></prop><reply name="Yes" fields="YES"/><reply name="No" fields="NO"/><reply name="Maybe" fields="MAYBE"/></request><consume name="Iterate" service="Expr" fields="MAYBE div n"><prop name="expr.bind.in" Div="div" N="n"/><prop name="expr.bind.out" NewDiv="div" N="n"/><prop name="expr.src" type="text/plain"><![CDATA[NewDiv = NextDiv(Div),
+"Ok".]]></prop><reply name="Ok" fields="div n"/></consume></mix></folder>
