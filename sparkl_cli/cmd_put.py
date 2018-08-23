@@ -17,10 +17,11 @@ Upload source command implementation.
 """
 from __future__ import print_function
 
-import requests
 import tempfile
 import subprocess
 import re
+import requests
+
 
 from sparkl_cli.common import (
     get_current_folder,
