@@ -36,7 +36,7 @@ def parse_args(subparser):
     subparser.add_argument(
         "file",
         type=str,
-        help="file name containing XML to upload")
+        help="file path or URL to file containing XML to upload")
 
     subparser.add_argument(
         "folder",
@@ -58,7 +58,8 @@ def is_url(path):
 
 def command(args):
     """
-    Uploads SPARKL source or other valid XML change file.
+    Uploads SPARKL source or other valid XML change file from local
+    file system or the internet.
     """
     to_delete = None
     upload_path = args.file
