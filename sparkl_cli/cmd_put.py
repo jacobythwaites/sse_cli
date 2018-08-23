@@ -20,6 +20,7 @@ from __future__ import print_function
 import requests
 import tempfile
 import subprocess
+import re
 
 from sparkl_cli.common import (
     get_current_folder,
@@ -43,8 +44,15 @@ def parse_args(subparser):
 
 
 def is_url(path):
-    prefixes = ['www', 'http://', 'https://', 'file://', 'ftp://']
-    return any(path.startswith(prefix) for prefix in prefixes)
+    """
+    Uses regex to check whether "path" is a URL.
+    """
+    try:
+        _prefix = re.findall(r'^[a-z]+://', path)[0]
+        return True
+
+    except IndexError:
+        return False
 
 
 def command(args):
@@ -53,13 +61,11 @@ def command(args):
     """
     to_delete = False
     upload_file = args.file
-    print('Path at start: {}'.format(upload_file))
 
-    if is_url(args.file):
-        response = requests.get(args.file)
+    if is_url(upload_file):
+        response = requests.get(upload_file)
         _handle, temp_path = tempfile.mkstemp(suffix='.xml')
         upload_file = temp_path
-        print('Temp path: {}'.format(upload_file))
         to_delete = True
         with open(upload_file, 'w') as content:
             content.write(response.text)
