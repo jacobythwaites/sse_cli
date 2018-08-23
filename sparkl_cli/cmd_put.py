@@ -17,6 +17,10 @@ Upload source command implementation.
 """
 from __future__ import print_function
 
+import requests
+import tempfile
+import subprocess
+
 from sparkl_cli.common import (
     get_current_folder,
     resolve,
@@ -38,11 +42,29 @@ def parse_args(subparser):
         help="folder id or path, into which the change is placed")
 
 
+def is_url(path):
+    prefixes = ['www', 'http://', 'https://', 'file://', 'ftp://']
+    return any(path.startswith(prefix) for prefix in prefixes)
+
+
 def command(args):
     """
     Uploads SPARKL source or other valid XML change file.
     """
-    with open(args.file, "rb") as upload_file:
+    to_delete = False
+    upload_file = args.file
+    print('Path at start: {}'.format(upload_file))
+
+    if is_url(args.file):
+        response = requests.get(args.file)
+        _handle, temp_path = tempfile.mkstemp(suffix='.xml')
+        upload_file = temp_path
+        print('Temp path: {}'.format(upload_file))
+        to_delete = True
+        with open(upload_file, 'w') as content:
+            content.write(response.text)
+
+    with open(upload_file, "rb") as upload_content:
         path = resolve(
             get_current_folder(args), args.folder)
 
@@ -51,5 +73,9 @@ def command(args):
             headers={
                 "x-sparkl-transform": "gen_change",
                 "Content-Type": "application/xml"},
-            data=upload_file)
+            data=upload_content)
+
+        if to_delete:
+            subprocess.call(['rm', upload_file])
+
         return response.json()
