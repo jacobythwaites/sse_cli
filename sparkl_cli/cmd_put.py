@@ -59,29 +59,34 @@ def command(args):
     """
     Uploads SPARKL source or other valid XML change file.
     """
-    to_delete = False
-    upload_file = args.file
+    to_delete = None
+    upload_path = args.file
 
-    if is_url(upload_file):
-        response = requests.get(upload_file)
-        _handle, temp_path = tempfile.mkstemp(suffix='.xml')
-        upload_file = temp_path
-        to_delete = True
-        with open(upload_file, 'w') as content:
-            content.write(response.text)
+    try:
 
-    with open(upload_file, "rb") as upload_content:
-        path = resolve(
-            get_current_folder(args), args.folder)
+        if is_url(upload_path):
+            response = requests.get(upload_path)
+            _handle, temp_path = tempfile.mkstemp(suffix='.xml')
 
-        response = sync_request(
-            args, "POST", "sse_cfg/change/" + path,
-            headers={
-                "x-sparkl-transform": "gen_change",
-                "Content-Type": "application/xml"},
-            data=upload_content)
+            with open(temp_path, 'w') as content:
+                content.write(response.text)
 
+            upload_path = temp_path
+            to_delete = temp_path
+
+        with open(upload_path, "rb") as upload_content:
+            path = resolve(
+                get_current_folder(args), args.folder)
+
+            response = sync_request(
+                args, "POST", "sse_cfg/change/" + path,
+                headers={
+                    "x-sparkl-transform": "gen_change",
+                    "Content-Type": "application/xml"},
+                data=upload_content)
+
+            return response.json()
+
+    finally:
         if to_delete:
-            subprocess.call(['rm', upload_file])
-
-        return response.json()
+            subprocess.call(['rm', to_delete])
