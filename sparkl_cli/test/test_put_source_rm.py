@@ -36,6 +36,10 @@ TEST_ALIAS = "pytest"
 PRIMES_FILE_PATH = "sparkl_cli/test/data/Primes.xml"
 TEST_CALL_FILE_PATH = "sparkl_cli/test/data/TestCall.xml"
 PRIMES_SPARKL_PATH = "Scratch/Primes"
+HELLO_WORLD_LINK = "https://raw.githubusercontent.com/" \
+                   "opensparkl/examples/master/Examples/" \
+                   "HelloWorld/hello_world.xml"
+HELLO_WORLD_PATH = "Scratch/hello_world"
 
 
 class Tests():
@@ -71,6 +75,21 @@ class Tests():
             alias=TEST_ALIAS)
 
         assert result["tag"] == "change"
+
+    def test_put_url(self):
+        result = sparkl(
+            "put",
+            HELLO_WORLD_LINK,
+            "Scratch",
+            alias=TEST_ALIAS)
+
+        assert result["tag"] == "change"
+        scratch_folders = sparkl(
+            "ls",
+            "Scratch",
+            alias=TEST_ALIAS)['content']
+        assert any(folder['attr']['name'] == 'hello_world'
+                   for folder in scratch_folders)
 
     def test_source_xml(self):
         result = sparkl(
@@ -150,9 +169,10 @@ class Tests():
         os.remove(temp_path)
 
     def test_rm(self):
-        result = sparkl(
-            "rm",
-            PRIMES_SPARKL_PATH,
-            alias=TEST_ALIAS)
-        print(result)
-        assert result["tag"] == "change"
+        for test_file in [PRIMES_SPARKL_PATH, HELLO_WORLD_PATH]:
+            result = sparkl(
+                "rm",
+                test_file,
+                alias=TEST_ALIAS)
+            print(result)
+            assert result["tag"] == "change"
