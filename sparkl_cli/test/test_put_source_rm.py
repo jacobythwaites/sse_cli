@@ -25,6 +25,8 @@ import tempfile
 from shutil import copyfile
 from multiprocessing import Process
 from time import sleep
+import http.server
+import socketserver
 
 from sparkl_cli.main import sparkl
 
@@ -33,9 +35,19 @@ TEST_USER = os.environ.get("TEST_USER")
 TEST_PASS = os.environ.get("TEST_PASS")
 
 TEST_ALIAS = "pytest"
+PATH_TO_TEST_DATA = "sparkl_cli/test/data"
 PRIMES_FILE_PATH = "sparkl_cli/test/data/Primes.xml"
 TEST_CALL_FILE_PATH = "sparkl_cli/test/data/TestCall.xml"
 PRIMES_SPARKL_PATH = "Scratch/Primes"
+TEST_CALL_SPARKL_PATH = "Scratch/TestCall"
+TEST_PORT = 8081
+
+
+def start_server(path):
+    os.chdir(path)
+    handler = http.server.SimpleHTTPRequestHandler
+    with socketserver.TCPServer(("", TEST_PORT), handler) as httpd:
+        httpd.serve_forever()
 
 
 class Tests():
@@ -71,6 +83,31 @@ class Tests():
             alias=TEST_ALIAS)
 
         assert result["tag"] == "change"
+
+    def test_put_url(self):
+        server_process = Process(
+            target=start_server,
+            args=(PATH_TO_TEST_DATA,))
+
+        server_process.start()
+        sleep(1)
+
+        result = sparkl(
+            "put",
+            "http://localhost:8081/TestCall.xml",
+            "Scratch",
+            alias=TEST_ALIAS)
+
+        sleep(1)
+        server_process.terminate()
+
+        assert result["tag"] == "change"
+        scratch_folders = sparkl(
+            "ls",
+            "Scratch",
+            alias=TEST_ALIAS)["content"]
+        assert any(folder["attr"]["name"] == "TestCall"
+                   for folder in scratch_folders)
 
     def test_source_xml(self):
         result = sparkl(
@@ -150,9 +187,10 @@ class Tests():
         os.remove(temp_path)
 
     def test_rm(self):
-        result = sparkl(
-            "rm",
-            PRIMES_SPARKL_PATH,
-            alias=TEST_ALIAS)
-        print(result)
-        assert result["tag"] == "change"
+        for test_file in [PRIMES_SPARKL_PATH, TEST_CALL_SPARKL_PATH]:
+            result = sparkl(
+                "rm",
+                test_file,
+                alias=TEST_ALIAS)
+            print(result)
+            assert result["tag"] == "change"
