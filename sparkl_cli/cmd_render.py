@@ -55,6 +55,8 @@ def parse_args(subparser):
     subparser.add_argument(
         "source",
         type=str,
+        nargs="?",
+        default=".",
         help="source path or id")
 
 

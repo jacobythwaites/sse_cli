@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<folder name="Scratch"><prop name="Description" type="text/plain">You can use this scratch folder for playing around.
+    </prop><folder name="Primes"><service name="Expr" provision="expr"><prop name="expr.src" type="text/x-erlang">NextDiv = fun
+  (2) -&gt; 3;
+  (Div) -&gt; Div + 2
+end.</prop></service><service name="Sequencer" provision="sequencer"/><field name="NO"/><field name="YES"/><field name="MAYBE"/><field name="n" type="integer"/><field name="div" type="integer"/><mix name="Mix"><solicit name="CheckPrime" service="Sequencer" fields="n"><response name="Yes" fields="YES"/><response name="No" fields="NO"/></solicit><request name="FirstDivisor" service="Expr" fields="n"><prop name="expr.bind.out" Div="div"/><prop name="expr.src" type="text/plain">Div = 2,
+&quot;Ok&quot;.</prop><reply name="Ok" fields="div"/></request><request name="Test" service="Expr" fields="div n"><prop name="expr.bind.in" Div="div" N="n"/><prop name="expr.src" type="text/plain">case Div * Div &gt; N of
+  true -&gt;
+    &quot;Yes&quot;;
+  false -&gt;
+    case N rem Div of
+      0 -&gt;
+        &quot;No&quot;;
+      _Otherwise -&gt;
+        &quot;Maybe&quot;
+    end
+ end.</prop><reply name="Yes" fields="YES"/><reply name="No" fields="NO"/><reply name="Maybe" fields="MAYBE"/></request><consume name="Iterate" service="Expr" fields="MAYBE div n"><prop name="expr.bind.in" Div="div" N="n"/><prop name="expr.bind.out" NewDiv="div" N="n"/><prop name="expr.src" type="text/plain">NewDiv = NextDiv(Div),
+&quot;Ok&quot;.</prop><reply name="Ok" fields="div n"/></consume></mix></folder><mix name="BarterOrch"><prop name="README" content-type="text/x-markdown">To use, click on the `Start` solicit and enter JSON such as:
+```
+{
+  &quot;customer&quot;:&quot;SPARKL&quot;,
+  &quot;sku&quot;:&quot;widgets&quot;,
+  &quot;qty&quot;:15}
+```</prop><service name="Sequencer" provision="sequencer"/><field name="quoteRequest" type="json"/><field name="quoteResponse" type="json"/><field name="orderRequest" type="json"/><field name="creditRequest" type="json"/><field name="creditResponse" type="json"/><field name="error" type="json"/><field name="shippingRequest" type="json"/><field name="shippingResponse" type="json"/><field name="orderResponse" type="json"/><folder name="Buyer"><service name="BuyerServer" provision="expr"/><solicit name="Start" service="Sequencer" fields="quoteRequest"><response name="Order" fields="orderResponse"/><response name="Error" fields="error"/></solicit><consume name="Barter" service="BuyerServer" fields="quoteResponse"><prop name="expr.src" content-type="text/x-erlang">QuoteResponse = get(&quot;quoteResponse&quot;),
+  
+random:seed(now()),
+case random:uniform(2) of
+  1 -&gt;
+    put(&quot;orderRequest&quot;, QuoteResponse),
+    &quot;Order&quot;;
+
+  2 -&gt;
+    put(&quot;quoteRequest&quot;, QuoteResponse),
+    &quot;Barter&quot;
+end.
+</prop><reply name="Order" fields="orderRequest"/><reply name="Barter" fields="quoteRequest"/></consume></folder><folder name="Seller"><service name="SellerServer" provision="expr"><prop name="expr.src" content-type="text/x-erlang">UnitPrice = fun (Sku, Qty) -&gt;
+  case maps:get(s(Sku), PriceList, undefined) of
+    undefined -&gt;
+      {error, &lt;&lt;&quot;No such product&quot;&gt;&gt;};
+    
+    Prices -&gt;
+      UnitPrice =
+        lists:foldl(
+          fun({Q, P}, Acc) -&gt;
+            case Qty &gt;= Q of
+              true -&gt;
+                P;
+              false -&gt;
+                Acc
+            end
+          end, 0.0, Prices),
+       {ok, UnitPrice}
+     end
+  end.
+  </prop><prop name="expr.init.PriceList">#{
+  &quot;widgets&quot; =&gt; [{1, 1.00}, {10, 0.80}, {100, 0.60}],
+  &quot;wodgets&quot; =&gt; [{1, 2.00}, {10, 1.90}, {100, 1.75}]}
+</prop></service><request name="Quote" service="SellerServer" fields="quoteRequest"><prop name="expr.src" content-type="text/x-erlang">QuoteRequest = get(&quot;quoteRequest&quot;),
+  
+#{
+  &quot;sku&quot; := Sku,
+  &quot;qty&quot; := Qty} = QuoteRequest,
+
+BarterFactor =
+  case maps:is_key(&quot;quote&quot;, QuoteRequest) of
+    true -&gt;
+      0.9;
+    false -&gt;
+      1.0
+  end,
+
+case UnitPrice(Sku, Qty) of
+  {ok, Price} -&gt;
+    put(&quot;quoteResponse&quot;,
+      QuoteRequest#{
+        &quot;quote&quot; =&gt; Price * BarterFactor}),
+      &quot;Quote&quot;;
+
+  {error, Reason} -&gt;
+    put(&quot;error&quot;,
+      QuoteRequest#{
+        &quot;error&quot; =&gt; u(Reason)}),
+    &quot;Error&quot;
+end.
+</prop><reply name="Quote" fields="quoteResponse"/><reply name="Error" fields="error"/></request><request name="CreditCheck" service="SellerServer" fields="orderRequest"><reply name="Credit" fields="creditRequest"><prop name="params">orderRequest:creditRequest</prop></reply></request><request name="Shipping" service="SellerServer" fields="creditResponse"><reply name="Ship" fields="shippingRequest"><prop name="params">creditResponse:shippingRequest</prop></reply></request><request name="Order" service="SellerServer" fields="shippingResponse"><reply name="Order" fields="orderResponse"><prop name="params">shippingResponse:orderResponse</prop></reply></request><consume name="Compensate" service="SellerServer" fields="error quoteResponse"/></folder><folder name="CreditAgency"><service name="CreditServer" provision="expr"><prop name="expr.src" content-type="text/x-erlang">CreditLimit = fun
+  (Customer) -&gt;
+    maps:get(Customer, CreditLimits, 100.0)
+end.
+</prop><prop name="expr.init.CreditLimits" content-type="text/x-erlang">#{
+  &lt;&lt;&quot;Acme&quot;&gt;&gt;   =&gt; 1000.00,
+  &lt;&lt;&quot;SPARKL&quot;&gt;&gt; =&gt; 1500.00}
+</prop></service><request name="CheckCredit" service="CreditServer" fields="creditRequest"><prop name="expr.src" content-type="text/x-erlang">CreditRequest = get(&quot;creditRequest&quot;),
+
+#{
+  &quot;customer&quot; := Customer,
+  &quot;quote&quot; := Quote,
+  &quot;qty&quot;   := Qty} = CreditRequest,
+  
+Amount = Quote * Qty,
+  
+case Amount =&lt; CreditLimit(Customer) of
+  true -&gt;
+    put(&quot;creditResponse&quot;,
+      CreditRequest#{
+        &quot;credit&quot; =&gt; Amount}),
+    &quot;Credit&quot;;
+  
+  false -&gt;
+    put(&quot;error&quot;,
+      CreditRequest#{
+        &quot;error&quot; =&gt; u(&quot;Credit declined&quot;)}),
+    &quot;Error&quot;
+end.
+</prop><reply name="Credit" fields="creditResponse"/><reply name="Error" fields="error"/></request><consume name="Compensate" service="CreditServer" fields="creditResponse error"/></folder><folder name="Shipper"><service name="ShipServer" provision="expr"><prop name="expr.init.Addresses">#{
+  &lt;&lt;&quot;Acme&quot;&gt;&gt; =&gt; &lt;&lt;&quot;1 Acme Place, Acme Town, AC1 8UL&quot;&gt;&gt;,
+  &lt;&lt;&quot;SPARKL&quot;&gt;&gt; =&gt; &lt;&lt;&quot;1 SPARKL Place, Sparklytown, SP1 9RE&quot;&gt;&gt;}</prop></service><request name="Shipping" service="ShipServer" fields="shippingRequest"><prop name="expr.src" content-type="text/x-erlang">ShippingRequest = get(&quot;shippingRequest&quot;),
+  
+#{
+  &quot;customer&quot; := Customer} = ShippingRequest,
+case maps:get(Customer, Addresses, undefined)  of
+  undefined -&gt;
+    put(&quot;error&quot;,
+      ShippingRequest#{
+        &quot;error&quot; =&gt; u(&quot;Cannot find customer ship address&quot;)}),
+    &quot;Error&quot;;
+
+  Address -&gt;
+    put(&quot;shippingResponse&quot;,
+      ShippingRequest#{
+        &quot;address&quot; =&gt; Address}),
+    &quot;Shipping&quot;
+end.
+</prop><reply name="Shipping" fields="shippingResponse"/><reply name="Error" fields="error"/></request><consume name="Compensate" service="ShipServer" fields="error shippingResponse"/></folder></mix></folder>
