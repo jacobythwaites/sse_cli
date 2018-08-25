@@ -1,3 +1,0 @@
-[console_scripts]
-sparkl = sparkl_cli.main:main
-

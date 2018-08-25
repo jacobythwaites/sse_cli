@@ -32,8 +32,9 @@ def parse_args(subparser):
     subparser.add_argument(
         "-i", "--include",
         type=str,
-        default="folder,mix,service,field,notify,solicit,response,request,reply,consume",
-        help="comma separated tags to include")
+        default="folder,mix,service,field,notify,"
+                "solicit,response,request,reply,consume",
+        help="comma separated tags to include e.g. folder,mix,service")
 
     subparser.add_argument(
         "source",
@@ -41,6 +42,7 @@ def parse_args(subparser):
         nargs="?",
         default=".",
         help="source path or id")
+
 
 def render(args, src_path):
     """

@@ -1,6 +1,7 @@
 # setup.py is generated from setup.py.src by make rel target.
 setup.py
 MANIFEST
+sparkl_cli.egg-info
 sparkl_cli/version.txt
 
 # README.txt is generated using pandoc from README.md
