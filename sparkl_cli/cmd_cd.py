@@ -64,7 +64,7 @@ def command(args):
             "tag": folder["tag"],
             "attr": {
                 "path": cwd}}
-    else:
-        raise CliException(
-            "No folder {Folder}".format(
-                Folder=cwd))
+
+    raise CliException(
+        "No folder {Folder}".format(
+            Folder=cwd))

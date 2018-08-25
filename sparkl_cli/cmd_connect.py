@@ -102,12 +102,11 @@ def new_connection(args):
         set_state(args, state)
         return response.json()
 
-    else:
-        connections.pop(args.alias, None)
-        set_state(args, state)
-        raise CliException(
-            "No SPARKL at {Url}".format(
-                Url=args.url))
+    connections.pop(args.alias, None)
+    set_state(args, state)
+    raise CliException(
+        "No SPARKL at {Url}".format(
+            Url=args.url))
 
 
 def command(args):
