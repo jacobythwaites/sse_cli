@@ -23,6 +23,7 @@ from sparkl_cli.CliException import (
     CliException)
 
 from sparkl_cli.common import (
+    del_current_folder,
     sync_request)
 
 
@@ -123,6 +124,8 @@ def command(args):
     """
     if not args.user:
         return show_login(args)
+
+    del_current_folder(args)
 
     if args.register:
         return register(args)

@@ -351,6 +351,17 @@ def get_current_folder(args):
     return connection.get("cwd", "/")
 
 
+def del_current_folder(args):
+    """
+    Convenience function clears the current folder. This
+    should be done on sign in and sign out.
+    """
+    connection = get_connection(args)
+    if "cwd" in connection:
+        del connection["cwd"]
+        put_connection(args, connection)
+
+
 def resolve(base, href):
     """
     Resolves a path against the base. A SPARKL absolute path
