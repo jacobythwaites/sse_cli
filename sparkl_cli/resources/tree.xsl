@@ -34,6 +34,12 @@
     select="'folder,mix,service,field,notify,solicit,response,request,reply,consume'"/>
 
   <!--
+    Flag to control detail on the line for each entry.
+  -->
+  <xsl:param name="detail"
+    select="false()"/>
+
+  <!--
     Document root.
   -->
   <xsl:template match="/">
@@ -49,8 +55,8 @@
         <xsl:call-template name="indent"/>
       </xsl:for-each>
 
-      <xsl:apply-templates select="." mode="prefix"/>
-      <xsl:value-of select="@name"/>
+      <xsl:apply-templates select="." mode="leaf"/>
+
       <xsl:text>&#x0a;</xsl:text>
 
       <xsl:apply-templates/>
@@ -110,28 +116,97 @@
   </xsl:template>
 
   <!--
-    Prefixes, none by default.
+    Leaf text after indent per subject type.
   -->
-  <xsl:template match="mix" mode="prefix">
+  <xsl:template match="folder" mode="leaf">
+    <xsl:value-of select="@name"/>
+  </xsl:template>
+
+  <xsl:template match="mix" mode="leaf">
     <xsl:text>µ </xsl:text>
+    <xsl:value-of select="@name"/>
   </xsl:template>
 
-  <xsl:template match="field" mode="prefix">
+  <xsl:template match="field" mode="leaf">
     <xsl:text>ƒ </xsl:text>
+    <xsl:value-of select="@name"/>
+
+    <xsl:if test="$detail and @type">
+      <xsl:text>:</xsl:text>
+      <xsl:value-of select="@type"/>
+    </xsl:if>
   </xsl:template>
 
-  <xsl:template match="service" mode="prefix">
+  <xsl:template match="service" mode="leaf">
     <xsl:text>▒ </xsl:text>
+    <xsl:value-of select="@name"/>
+
+    <xsl:if test="$detail">
+      <xsl:if test="@provision">
+        <xsl:text>:</xsl:text>
+        <xsl:value-of select="@provision"/>
+      </xsl:if>
+    </xsl:if>
   </xsl:template>
 
-  <xsl:template match="notify|solicit" mode="prefix">
+  <xsl:template match="notify" mode="leaf">
     <xsl:text>» </xsl:text>
+    <xsl:value-of select="@name"/>
+
+    <xsl:call-template name="service_ref"/>
+    <xsl:call-template name="field_refs"/>
   </xsl:template>
 
-  <xsl:template match="request|consume" mode="prefix">
+  <xsl:template match="solicit" mode="leaf">
+    <xsl:text>» </xsl:text>
+    <xsl:value-of select="@name"/>
+
+    <xsl:call-template name="service_ref"/>
+    <xsl:call-template name="field_refs"/>
+  </xsl:template>
+
+  <xsl:template match="request" mode="leaf">
     <xsl:text>« </xsl:text>
+    <xsl:value-of select="@name"/>
+
+    <xsl:call-template name="service_ref"/>
+    <xsl:call-template name="field_refs"/>
   </xsl:template>
 
-  <xsl:template match="*" mode="prefix"/>
+  <xsl:template match="consume" mode="leaf">
+    <xsl:text>« </xsl:text>
+    <xsl:value-of select="@name"/>
+
+    <xsl:call-template name="service_ref"/>
+    <xsl:call-template name="field_refs"/>
+  </xsl:template>
+
+  <xsl:template match="response" mode="leaf">
+    <xsl:text>« </xsl:text>
+    <xsl:value-of select="@name"/>
+
+    <xsl:call-template name="field_refs"/>
+  </xsl:template>
+
+  <xsl:template match="reply" mode="leaf">
+    <xsl:text>» </xsl:text>
+    <xsl:value-of select="@name"/>
+
+    <xsl:call-template name="field_refs"/>
+  </xsl:template>
+
+  <xsl:template name="service_ref">
+    <xsl:if test="$detail and @service">
+      <xsl:text>:</xsl:text>
+      <xsl:value-of select="@service"/>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template name="field_refs">
+    <xsl:if test="$detail">
+      <xsl:text> </xsl:text>
+      <xsl:value-of select="@fields"/>
+    </xsl:if>
+  </xsl:template>
 
 </xsl:stylesheet>

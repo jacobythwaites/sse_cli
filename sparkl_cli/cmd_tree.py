@@ -30,6 +30,11 @@ def parse_args(subparser):
     Adds module-specific subcommand arguments.
     """
     subparser.add_argument(
+        "-a", "--all",
+        action="store_true",
+        help="additional information is shown for each subject line")
+
+    subparser.add_argument(
         "-i", "--include",
         type=str,
         default="folder,mix,service,field,notify,"
@@ -52,9 +57,15 @@ def render(args, src_path):
     xsl_path = os.path.join(
         os.path.dirname(__file__),
         "resources/tree.xsl")
+
+    detail = "false()"
+    if args.all:
+        detail = "true()"
+
     subprocess.check_call([
         "xsltproc",
         "--stringparam", "include", args.include,
+        "--param", "detail", detail,
         xsl_path,
         src_path])
 
