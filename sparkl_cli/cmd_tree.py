@@ -40,11 +40,16 @@ def parse_args(subparser):
         help="source path refers to local file not SPARKL object")
 
     subparser.add_argument(
+        "-p", "--props",
+        action="store_true",
+        help="include props in the tree output")
+
+    subparser.add_argument(
         "-i", "--include",
         type=str,
-        default="folder,mix,service,field,notify,"
-                "solicit,response,request,reply,consume",
-        help="comma separated tags to include e.g. folder,mix,service")
+        default="service,field,notify,solicit,"
+                "response,request,reply,consume",
+        help="comma separated tags to include, mix and folder are always included")
 
     subparser.add_argument(
         "source",
@@ -59,6 +64,10 @@ def render(args, src_path):
     Applies the tree.xsl transform on src_path to
     generate the text tree output.
     """
+    tags = "mix,folder," + args.include
+    if args.props:
+        tags += ",prop"
+
     xsl_path = os.path.join(
         os.path.dirname(__file__),
         "resources/tree.xsl")
@@ -69,7 +78,7 @@ def render(args, src_path):
 
     subprocess.check_call([
         "xsltproc",
-        "--stringparam", "include", args.include,
+        "--stringparam", "include", tags,
         "--param", "detail", detail,
         xsl_path,
         src_path])
@@ -77,8 +86,9 @@ def render(args, src_path):
 
 def command(args):
     """
-    Gets the SPARKL source specified by path and renders
-    it as an abbreviated ASCII tree.
+    Renders the configuration or file source as an ASCII tree with
+    optional detail. You can limit which tags are rendered, such
+    as only services or fields.
     """
     if args.file:
         render(args, args.source)

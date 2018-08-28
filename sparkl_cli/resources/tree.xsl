@@ -28,21 +28,24 @@
   <xsl:output method="text"/>
 
   <!--
-    Space separated list of tags to include.
-  -->
-  <xsl:param name="include"
-    select="'folder,mix,service,field,notify,solicit,response,request,reply,consume'"/>
-
-  <!--
     Flag to control detail on the line for each entry.
   -->
   <xsl:param name="detail"
     select="false()"/>
 
+ <!--
+    Space separated list of tags to include.
+  -->
+  <xsl:param name="include">
+    folder,mix,service,field,notify,solicit,
+    response,request,reply,consume,prop
+  </xsl:param>
+
   <!--
     Document root.
   -->
   <xsl:template match="/">
+    <xsl:value-of select="$include"/>
     <xsl:apply-templates/>
   </xsl:template>
 
@@ -224,6 +227,13 @@
     <xsl:call-template name="field_refs"/>
   </xsl:template>
 
+  <xsl:template match="prop" mode="leaf">
+    <xsl:text>○ </xsl:text>
+    <xsl:value-of select="@name"/>
+
+    <xsl:call-template name="prop-detail"/>
+  </xsl:template>
+
   <xsl:template name="service_ref">
     <xsl:if test="$detail and @service">
       <xsl:text>:</xsl:text>
@@ -246,6 +256,23 @@
         <xsl:text>:</xsl:text>
         <xsl:value-of select="@permission"/>
       </xsl:for-each>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template name="prop-detail">
+    <xsl:if test="$detail">
+      <xsl:for-each select="@*">
+        <xsl:if test="local-name()!='name'">
+          <xsl:text> </xsl:text>
+          <xsl:value-of select="local-name()"/>
+          <xsl:text>=</xsl:text>
+          <xsl:value-of select="."/>
+        </xsl:if>
+      </xsl:for-each>
+
+      <xsl:if test="text()">
+        <xsl:text> ¶</xsl:text>
+      </xsl:if>
     </xsl:if>
   </xsl:template>
 
