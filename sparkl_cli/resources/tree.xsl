@@ -45,7 +45,6 @@
     Document root.
   -->
   <xsl:template match="/">
-    <xsl:value-of select="$include"/>
     <xsl:apply-templates/>
   </xsl:template>
 
