@@ -44,6 +44,10 @@ TEST_PORT = 8081
 
 
 def start_server(path):
+    """
+    This server takes a little while to start.
+    We give it 5 seconds in the tests.
+    """
     os.chdir(path)
     handler = http.server.SimpleHTTPRequestHandler
     with socketserver.TCPServer(("", TEST_PORT), handler) as httpd:
@@ -90,7 +94,7 @@ class Tests():
             args=(PATH_TO_TEST_DATA,))
 
         server_process.start()
-        sleep(1)
+        sleep(5)
 
         result = sparkl(
             "put",

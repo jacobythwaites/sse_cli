@@ -28,6 +28,7 @@ from http.cookiejar import LWPCookieJar
 import websocket
 import psutil
 import requests
+import subprocess
 
 from requests.compat import urljoin, urlsplit, urlunparse
 from requests.utils import dict_from_cookiejar
@@ -527,3 +528,25 @@ def get_source(args, src_path):
         accept="xml")
     with open(src_path, "w") as output_file:
         output_file.write(response.text)
+
+
+def transform(xsl, src, args=[], dst=None):
+    """
+    Wraps xsltproc to transform the src file using xsl and args
+    into the dst file (stdout if None).
+
+    The xsl file is resolved relative to our package directory,
+    but that doesn't apply to src or dst.
+
+    Args is just a list of strings forming argv for xsltproc.
+    """
+    xsl = os.path.join(
+        os.path.dirname(__file__),
+        xsl)
+
+    if dst:
+        args += ["--output", dst]
+
+    cmd = ["xsltproc"] + args + [xsl, src]
+
+    subprocess.check_call(cmd)

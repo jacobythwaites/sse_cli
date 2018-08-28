@@ -19,10 +19,8 @@ from __future__ import print_function
 
 import os
 import tempfile
-import subprocess
 
-
-from sparkl_cli.common import get_source
+from sparkl_cli.common import get_source, transform
 
 
 def parse_args(subparser):
@@ -68,20 +66,18 @@ def render(args, src_path):
     if args.props:
         tags += ",prop"
 
-    xsl_path = os.path.join(
-        os.path.dirname(__file__),
-        "resources/tree.xsl")
-
     detail = "false()"
     if args.all:
         detail = "true()"
 
-    subprocess.check_call([
-        "xsltproc",
-        "--stringparam", "include", tags,
-        "--param", "detail", detail,
-        xsl_path,
-        src_path])
+    xsl_args = [
+        "--stringparam", "tags", tags,
+        "--param", "detail", detail]
+
+    transform(
+        "resources/tree.xsl",
+        src_path,
+        xsl_args)
 
 
 def command(args):

@@ -36,7 +36,7 @@
  <!--
     Space separated list of tags to include.
   -->
-  <xsl:param name="include">
+  <xsl:param name="tags">
     folder,mix,service,field,notify,solicit,
     response,request,reply,consume,prop
   </xsl:param>
@@ -52,7 +52,7 @@
     Line of output for each element.
   -->
   <xsl:template match="*">
-    <xsl:if test="contains($include, local-name())">
+    <xsl:if test="contains($tags, local-name())">
       <xsl:for-each select="ancestor-or-self::*">
         <xsl:call-template name="indent"/>
       </xsl:for-each>
@@ -90,7 +90,7 @@
        -->
       <xsl:when test="position()!=last()">
         <xsl:choose>
-          <xsl:when test="following-sibling::*[contains($include,local-name())]">
+          <xsl:when test="following-sibling::*[contains($tags,local-name())]">
             <xsl:text>│   </xsl:text>
           </xsl:when>
 
@@ -105,7 +105,7 @@
       -->
       <xsl:when test="position()=last()">
         <xsl:choose>
-          <xsl:when test="following-sibling::*[contains($include,local-name())]">
+          <xsl:when test="following-sibling::*[contains($tags,local-name())]">
             <xsl:choose>
               <xsl:when test="local-name()='mix'">
                 <xsl:text>╞══ </xsl:text>
