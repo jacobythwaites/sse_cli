@@ -138,11 +138,15 @@
   -->
   <xsl:template match="folder" mode="leaf">
     <xsl:value-of select="@name"/>
+
+    <xsl:call-template name="grants"/>
   </xsl:template>
 
   <xsl:template match="mix" mode="leaf">
     <xsl:text>µ </xsl:text>
     <xsl:value-of select="@name"/>
+
+    <xsl:call-template name="grants"/>
   </xsl:template>
 
   <xsl:template match="field" mode="leaf">
@@ -231,6 +235,17 @@
     <xsl:if test="$detail">
       <xsl:text> </xsl:text>
       <xsl:value-of select="@fields"/>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template name="grants">
+    <xsl:if test="$detail and grant">
+      <xsl:for-each select="grant">
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="@to"/>
+        <xsl:text>:</xsl:text>
+        <xsl:value-of select="@permission"/>
+      </xsl:for-each>
     </xsl:if>
   </xsl:template>
 

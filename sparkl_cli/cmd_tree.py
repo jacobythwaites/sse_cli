@@ -35,6 +35,11 @@ def parse_args(subparser):
         help="additional information is shown for each subject line")
 
     subparser.add_argument(
+        "-f", "--file",
+        action="store_true",
+        help="source path refers to local file not SPARKL object")
+
+    subparser.add_argument(
         "-i", "--include",
         type=str,
         default="folder,mix,service,field,notify,"
@@ -75,12 +80,16 @@ def command(args):
     Gets the SPARKL source specified by path and renders
     it as an abbreviated ASCII tree.
     """
-    (_handle, temp_file) = tempfile.mkstemp()
-    try:
-        # Get content of tempfile from local file.
-        get_source(args, temp_file)
-        render(args, temp_file)
+    if args.file:
+        render(args, args.source)
 
-    # Remove tempfile.
-    finally:
-        os.remove(temp_file)
+    else:
+        (_handle, temp_file) = tempfile.mkstemp()
+        try:
+            # Get content of tempfile from local file.
+            get_source(args, temp_file)
+            render(args, temp_file)
+
+        # Remove tempfile.
+        finally:
+            os.remove(temp_file)
