@@ -27,6 +27,7 @@ from multiprocessing import Process
 from time import sleep
 import http.server
 import socketserver
+import requests
 
 from sparkl_cli.main import sparkl
 
@@ -40,19 +41,6 @@ PRIMES_FILE_PATH = "sparkl_cli/test/data/Primes.xml"
 TEST_CALL_FILE_PATH = "sparkl_cli/test/data/TestCall.xml"
 PRIMES_SPARKL_PATH = "Scratch/Primes"
 TEST_CALL_SPARKL_PATH = "Scratch/TestCall"
-TEST_PORT = 8081
-
-
-def start_server(path):
-    """
-    This server takes a little while to start.
-    We give it 5 seconds in the tests.
-    """
-    os.chdir(path)
-    handler = http.server.SimpleHTTPRequestHandler
-    with socketserver.TCPServer(("", TEST_PORT), handler) as httpd:
-        httpd.serve_forever()
-
 
 class Tests():
 
@@ -79,6 +67,10 @@ class Tests():
         for tmp in glob.glob("tmp*.*"):
             os.remove(tmp)
 
+    def test_foo(self, httpserver):
+        httpserver.serve_content("<a/>")
+        assert requests.get(httpserver.url).text == "<a/>"
+
     def test_put(self):
         result = sparkl(
             "put",
@@ -88,22 +80,19 @@ class Tests():
 
         assert result["tag"] == "change"
 
-    def test_put_url(self):
-        server_process = Process(
-            target=start_server,
-            args=(PATH_TO_TEST_DATA,))
-
-        server_process.start()
-        sleep(5)
+    def test_put_url(self, httpserver):
+        """
+        Note the dependency on the pytest funcargs library
+        pytest_localserver.
+        """
+        httpserver.serve_content(
+            open(TEST_CALL_FILE_PATH).read())
 
         result = sparkl(
             "put",
-            "http://localhost:8081/TestCall.xml",
+            httpserver.url + "/TestCall.xml",
             "Scratch",
             alias=TEST_ALIAS)
-
-        sleep(1)
-        server_process.terminate()
 
         assert result["tag"] == "change"
         scratch_folders = sparkl(

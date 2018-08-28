@@ -49,7 +49,8 @@ DEPS := \
 	pylint \
 	pytest \
 	requests \
-	websocket-client
+	websocket-client \
+	pytest_localserver
 else
 DEPS := \
 	argparse \
@@ -60,7 +61,8 @@ DEPS := \
 	pylint \
 	pytest \
 	requests \
-	websocket-client
+	websocket-client \
+	pytest_localserver
 endif
 
 .PHONY: deps
