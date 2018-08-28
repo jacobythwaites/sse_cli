@@ -104,11 +104,29 @@
       <xsl:when test="position()=last()">
         <xsl:choose>
           <xsl:when test="following-sibling::*[contains($include,local-name())]">
-            <xsl:text>├── </xsl:text>
+            <xsl:choose>
+              <xsl:when test="local-name()='mix'">
+                <xsl:text>╞══ </xsl:text>
+              </xsl:when>
+
+              <xsl:otherwise>
+                <xsl:text>├── </xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
+
           </xsl:when>
 
           <xsl:otherwise>
-            <xsl:text>└── </xsl:text>
+            <xsl:choose>
+              <xsl:when test="local-name()='mix'">
+                <xsl:text>╘══ </xsl:text>
+              </xsl:when>
+
+              <xsl:otherwise>
+                <xsl:text>└── </xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
+
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>
@@ -150,7 +168,7 @@
   </xsl:template>
 
   <xsl:template match="notify" mode="leaf">
-    <xsl:text>» </xsl:text>
+    <xsl:text>&gt;&gt; </xsl:text>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="service_ref"/>
@@ -158,7 +176,7 @@
   </xsl:template>
 
   <xsl:template match="solicit" mode="leaf">
-    <xsl:text>» </xsl:text>
+    <xsl:text>&gt;&gt; </xsl:text>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="service_ref"/>
@@ -166,7 +184,7 @@
   </xsl:template>
 
   <xsl:template match="request" mode="leaf">
-    <xsl:text>« </xsl:text>
+    <xsl:text>&lt;  </xsl:text>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="service_ref"/>
@@ -174,7 +192,7 @@
   </xsl:template>
 
   <xsl:template match="consume" mode="leaf">
-    <xsl:text>« </xsl:text>
+    <xsl:text>&lt;&lt; </xsl:text>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="service_ref"/>
@@ -182,14 +200,21 @@
   </xsl:template>
 
   <xsl:template match="response" mode="leaf">
-    <xsl:text>« </xsl:text>
+    <xsl:text>&lt;&lt; </xsl:text>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="field_refs"/>
   </xsl:template>
 
-  <xsl:template match="reply" mode="leaf">
-    <xsl:text>» </xsl:text>
+  <xsl:template match="request/reply" mode="leaf">
+    <xsl:text>&gt; </xsl:text>
+    <xsl:value-of select="@name"/>
+
+    <xsl:call-template name="field_refs"/>
+  </xsl:template>
+
+  <xsl:template match="consume/reply" mode="leaf">
+    <xsl:text>&gt;&gt; </xsl:text>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="field_refs"/>
