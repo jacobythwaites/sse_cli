@@ -67,10 +67,6 @@ class Tests():
         for tmp in glob.glob("tmp*.*"):
             os.remove(tmp)
 
-    def test_foo(self, httpserver):
-        httpserver.serve_content("<a/>")
-        assert requests.get(httpserver.url).text == "<a/>"
-
     def test_put(self):
         result = sparkl(
             "put",
