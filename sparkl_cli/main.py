@@ -66,6 +66,7 @@ from sparkl_cli import (
     cmd_source,
     cmd_start,
     cmd_stop,
+    cmd_tree,
     cmd_undo,
     cmd_vars)
 
@@ -133,6 +134,9 @@ MODULES = (
 
     ("stop", cmd_stop,
      "stop one or more services"),
+
+    ("tree", cmd_tree,
+     "show source in tree-like format"),
 
     ("undo", cmd_undo,
      "undo last change"),

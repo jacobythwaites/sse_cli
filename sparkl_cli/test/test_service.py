@@ -167,7 +167,7 @@ class Tests():
         # Load the service implementation module with no session.
         service = sparkl(
             "service",
-            "admin@sparkl.com/Scratch/TestPublicRest/REST",
+            TEST_USER + "/Scratch/TestPublicRest/REST",
             "test_rest",
             alias="pytest_nosession")
 
@@ -200,7 +200,7 @@ class Tests():
         # Load the close test implementation.
         service = sparkl(
             "service",
-            "admin@sparkl.com/Scratch/TestPublicRest/REST",
+            TEST_USER + "/Scratch/TestPublicRest/REST",
             "test_close",
             alias="pytest_nosession")
 

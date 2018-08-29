@@ -1,7 +1,0 @@
-argparse
-psutil
-requests
-websocket_client
-elasticsearch
-certifi
-cookiejar

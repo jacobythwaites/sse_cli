@@ -35,7 +35,7 @@ def parse_args(subparser):
         "subject",
         type=str,
         nargs='?',
-        default='/',
+        default='.',
         help="path or id of configuration object. By default: /")
 
 

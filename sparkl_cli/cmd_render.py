@@ -23,7 +23,7 @@ import subprocess
 import tempfile
 from time import sleep
 
-from sparkl_cli.common import get_source
+from sparkl_cli.common import get_source, transform
 
 DEFAULT_INTERVAL = 3
 
@@ -55,6 +55,8 @@ def parse_args(subparser):
     subparser.add_argument(
         "source",
         type=str,
+        nargs="?",
+        default=".",
         help="source path or id")
 
 
@@ -63,16 +65,11 @@ def render(src_path, dst_path):
     Applies the render.xsl transform on src_path to
     generate the content of dst_path.
     """
-    xsl_path = os.path.join(
-        os.path.dirname(__file__),
-        "resources/render.xsl")
-    subprocess.check_call([
-        "xsltproc",
-        "--xincludestyle",
-        "--output", dst_path,
-        "--stringparam", "mode", "page",
-        xsl_path,
-        src_path])
+    transform(
+        "resources/render.xsl",
+        src_path,
+        ["--xincludestyle"],
+        dst_path)
 
 
 def get_html_content(src_file, temp_file):

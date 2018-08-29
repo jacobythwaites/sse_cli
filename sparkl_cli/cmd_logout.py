@@ -18,6 +18,7 @@ Logout command implementation.
 from __future__ import print_function
 
 from sparkl_cli.common import (
+    del_current_folder,
     sync_request)
 
 
@@ -32,6 +33,8 @@ def command(args):
     """
     Logs out the currently logged-in user, if any.
     """
+    del_current_folder(args)
+
     response = sync_request(
         args, "POST", "sse_cfg/signout")
 
