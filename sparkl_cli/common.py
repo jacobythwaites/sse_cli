@@ -25,10 +25,9 @@ import tempfile
 import json
 import posixpath
 import subprocess
+from http.cookiejar import LWPCookieJar
 import websocket
 import psutil
-
-from http.cookiejar import LWPCookieJar
 
 import requests
 from requests.compat import urljoin, urlsplit, urlunparse
