@@ -42,6 +42,7 @@ TEST_CALL_FILE_PATH = "sparkl_cli/test/data/TestCall.xml"
 PRIMES_SPARKL_PATH = "Scratch/Primes"
 TEST_CALL_SPARKL_PATH = "Scratch/TestCall"
 
+
 class Tests():
 
     def setup_method(self):
