@@ -77,6 +77,12 @@ ifeq  '$(shell which pandoc)'  ''
 endif
 	@$(PIP) install --user -q $(DEPS)
 
+#####
+# ALL
+#####
+.PHONY: all
+all: clean lint compile docs test rel
+
 ######
 # LINT
 ######
