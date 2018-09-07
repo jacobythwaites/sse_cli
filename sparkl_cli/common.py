@@ -24,12 +24,12 @@ import shutil
 import tempfile
 import json
 import posixpath
+import subprocess
 from http.cookiejar import LWPCookieJar
 import websocket
 import psutil
-import requests
-import subprocess
 
+import requests
 from requests.compat import urljoin, urlsplit, urlunparse
 from requests.utils import dict_from_cookiejar
 
@@ -533,7 +533,7 @@ def get_source(args, src_path):
         output_file.write(response.text)
 
 
-def transform(xsl, src, args=[], dst=None):
+def transform(xsl, src, args=None, dst=None):
     """
     Wraps xsltproc to transform the src file using xsl and args
     into the dst file (stdout if None).
@@ -546,6 +546,9 @@ def transform(xsl, src, args=[], dst=None):
     xsl = os.path.join(
         os.path.dirname(__file__),
         xsl)
+
+    if not args:
+        args = []
 
     if dst:
         args += ["--output", dst]
