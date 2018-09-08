@@ -68,7 +68,6 @@ def render(src_path, dst_path):
     transform(
         "resources/render.xsl",
         src_path,
-        ["--xincludestyle"],
         dst_path)
 
 
