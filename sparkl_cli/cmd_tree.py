@@ -65,19 +65,16 @@ def render(args, src_path):
     tags = "mix,folder," + args.include
     if args.props:
         tags += ",prop"
+    tags = "\"" + tags + "\""
 
     detail = "false()"
     if args.all:
         detail = "true()"
 
-    xsl_args = [
-        "--stringparam", "tags", tags,
-        "--param", "detail", detail]
-
     transform(
-        "resources/tree.xsl",
-        src_path,
-        xsl_args)
+        "resources/tree.xsl", src_path, None,
+        tags=tags,
+        detail=detail)
 
 
 def command(args):
