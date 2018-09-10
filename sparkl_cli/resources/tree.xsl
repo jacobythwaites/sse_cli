@@ -54,13 +54,13 @@
   <xsl:variable name="mix-prefix">&#x03BC; </xsl:variable>
   <xsl:variable name="field-prefix">&#x0192; </xsl:variable>
   <xsl:variable name="service-prefix">&#x2592; </xsl:variable>
-  <xsl:variable name="notify-prefix">&#x25BA;&#x25BA; </xsl:variable>
-  <xsl:variable name="solicit-prefix">&#x25BA;&#x25BA; </xsl:variable>
-  <xsl:variable name="response-prefix">&#x25C4;&#x25C4; </xsl:variable>
-  <xsl:variable name="request-prefix">&#x25C4;  </xsl:variable>
-  <xsl:variable name="request-reply-prefix">&#x25BA;  </xsl:variable>
-  <xsl:variable name="consume-prefix">&#x25C4;&#x25C4; </xsl:variable>
-  <xsl:variable name="consume-reply-prefix">&#x25BA;&#x25BA; </xsl:variable>
+  <xsl:variable name="notify-prefix">&#x25B8;&#x25B8; </xsl:variable>
+  <xsl:variable name="solicit-prefix">&#x25B8;&#x25B8; </xsl:variable>
+  <xsl:variable name="response-prefix">&#x25C2;&#x25C2; </xsl:variable>
+  <xsl:variable name="request-prefix">&#x25C2;  </xsl:variable>
+  <xsl:variable name="request-reply-prefix">&#x25B8;  </xsl:variable>
+  <xsl:variable name="consume-prefix">&#x25C2;&#x25C2; </xsl:variable>
+  <xsl:variable name="consume-reply-prefix">&#x25B8;&#x25B8; </xsl:variable>
   <xsl:variable name="prop-prefix">&#x00B7;  </xsl:variable>
   <xsl:variable name="content-indicator"> &#x00B6;</xsl:variable>
 
