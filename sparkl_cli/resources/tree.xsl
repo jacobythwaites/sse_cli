@@ -25,7 +25,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   exclude-result-prefixes="xsi">
 
-  <xsl:output method="text" encoding="ISO-8859-1"/>
+  <xsl:output method="text" encoding="UTF-8"/>
 
   <!--
     Flag to control detail on the line for each entry.
@@ -41,10 +41,15 @@
     response,request,reply,consume,prop
   </xsl:param>
 
-  <xsl:variable name="outer-vertical">&#179;   </xsl:variable>
-  <xsl:variable name="non-terminal">&#195;&#196;&#196; </xsl:variable>
-  <xsl:variable name="terminal">&#192;&#196;&#196; </xsl:variable>
-  <xsl:variable name="mix-prefix">&#230; </xsl:variable>
+  <!--
+    See https://www.w3schools.com/charsets/ref_utf_box.asp
+  -->
+  <xsl:variable name="outer-vertical">&#9474;   </xsl:variable>
+  <xsl:variable name="non-terminal">&#9500;&#9472;&#9472; </xsl:variable>
+  <xsl:variable name="non-terminal-mix">&#x251D;&#9472;&#9472; </xsl:variable>
+  <xsl:variable name="terminal">&#9492;&#9472;&#9472; </xsl:variable>
+  <xsl:variable name="terminal-mix">&#9492;&#9472;&#9472; </xsl:variable>
+  <xsl:variable name="mix-prefix">&#956; </xsl:variable>
   <xsl:variable name="field-prefix">&#159; </xsl:variable>
   <xsl:variable name="service-prefix">&#177; </xsl:variable>
   <xsl:variable name="notify-prefix">&gt;&gt; </xsl:variable>
@@ -124,7 +129,7 @@
           <xsl:when test="following-sibling::*[contains($tags,local-name())]">
             <xsl:choose>
               <xsl:when test="local-name()='mix'">
-                <xsl:value-of select="$non-terminal"/>
+                <xsl:value-of select="$non-terminal-mix"/>
               </xsl:when>
 
               <xsl:otherwise>
@@ -137,7 +142,7 @@
           <xsl:otherwise>
             <xsl:choose>
               <xsl:when test="local-name()='mix'">
-                <xsl:value-of select="$terminal"/>
+                <xsl:value-of select="$terminal-mix"/>
               </xsl:when>
 
               <xsl:otherwise>
