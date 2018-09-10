@@ -43,24 +43,26 @@
 
   <!--
     See https://www.w3schools.com/charsets/ref_utf_box.asp
+    Note that the Windows console must be set to UTF8 using
+    the chcp 65001 command.
   -->
-  <xsl:variable name="outer-vertical">&#9474;   </xsl:variable>
-  <xsl:variable name="non-terminal">&#9500;&#9472;&#9472; </xsl:variable>
-  <xsl:variable name="non-terminal-mix">&#x251D;&#9472;&#9472; </xsl:variable>
-  <xsl:variable name="terminal">&#9492;&#9472;&#9472; </xsl:variable>
-  <xsl:variable name="terminal-mix">&#9492;&#9472;&#9472; </xsl:variable>
-  <xsl:variable name="mix-prefix">&#956; </xsl:variable>
-  <xsl:variable name="field-prefix">&#159; </xsl:variable>
-  <xsl:variable name="service-prefix">&#177; </xsl:variable>
-  <xsl:variable name="notify-prefix">&gt;&gt; </xsl:variable>
-  <xsl:variable name="solicit-prefix">&gt;&gt; </xsl:variable>
-  <xsl:variable name="response-prefix">&lt;&lt; </xsl:variable>
-  <xsl:variable name="request-prefix">&lt;  </xsl:variable>
-  <xsl:variable name="request-reply-prefix">&gt;  </xsl:variable>
-  <xsl:variable name="consume-prefix">&lt;&lt; </xsl:variable>
-  <xsl:variable name="consume-reply-prefix">&gt;&gt; </xsl:variable>
-  <xsl:variable name="prop-prefix">&#250;  </xsl:variable>
-  <xsl:variable name="content-indicator"> &#244;</xsl:variable>
+  <xsl:variable name="outer-vertical">&#x2502;   </xsl:variable>
+  <xsl:variable name="non-terminal">&#x251C;&#x2500;&#x2500; </xsl:variable>
+  <xsl:variable name="non-terminal-mix">&#x251D;&#x2500;&#x2500; </xsl:variable>
+  <xsl:variable name="terminal">&#x2514;&#x2500;&#x2500; </xsl:variable>
+  <xsl:variable name="terminal-mix">&#x2515;&#x2501;&#x2501; </xsl:variable>
+  <xsl:variable name="mix-prefix">&#x03BC; </xsl:variable>
+  <xsl:variable name="field-prefix">&#x0192; </xsl:variable>
+  <xsl:variable name="service-prefix">&#x2592; </xsl:variable>
+  <xsl:variable name="notify-prefix">&#x21D2;  </xsl:variable>
+  <xsl:variable name="solicit-prefix">&#x21D2;  </xsl:variable>
+  <xsl:variable name="response-prefix">&#x21D0;  </xsl:variable>
+  <xsl:variable name="request-prefix">&#x2190;  </xsl:variable>
+  <xsl:variable name="request-reply-prefix">&#x2192;  </xsl:variable>
+  <xsl:variable name="consume-prefix">&#x21D0;  </xsl:variable>
+  <xsl:variable name="consume-reply-prefix">&#x21D2;  </xsl:variable>
+  <xsl:variable name="prop-prefix">&#x00B7;  </xsl:variable>
+  <xsl:variable name="content-indicator"> &#x00B6;</xsl:variable>
 
   <!--
     Document root.
