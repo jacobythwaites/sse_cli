@@ -17,8 +17,9 @@ Upload source command implementation.
 """
 from __future__ import print_function
 
-import tempfile
+import os
 import re
+import tempfile
 import requests
 
 

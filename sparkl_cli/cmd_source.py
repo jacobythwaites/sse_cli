@@ -16,6 +16,8 @@ limitations under the License.
 Get source command implementation.
 """
 from __future__ import print_function
+
+import os
 import tempfile
 
 from sparkl_cli.common import get_source
