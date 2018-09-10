@@ -18,7 +18,6 @@ Upload source command implementation.
 from __future__ import print_function
 
 import tempfile
-import subprocess
 import re
 import requests
 
@@ -93,4 +92,4 @@ def command(args):
 
     finally:
         if to_delete:
-            subprocess.call(['rm', to_delete])
+            os.remove(to_delete)

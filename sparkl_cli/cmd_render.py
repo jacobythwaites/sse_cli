@@ -19,7 +19,6 @@ from __future__ import print_function
 
 from shutil import copyfile
 import os
-import subprocess
 from time import sleep
 
 from sparkl_cli.common import get_source, mktemp, transform
@@ -90,6 +89,7 @@ def show_html(args, local=False):
     The temp file is deleted once the source code is returned.
     """
     temp_file = mktemp('.html')
+    print(temp_file)
     try:
         # Get content of tempfile from local file.
         if local:
@@ -100,7 +100,7 @@ def show_html(args, local=False):
         return get_html_content(temp_file, temp_file)
 
     finally:
-        subprocess.check_call(['rm', temp_file])
+        os.remove(temp_file)
 
 
 def save_local_as_html(src, dest):
@@ -111,7 +111,7 @@ def save_local_as_html(src, dest):
     temp_file = mktemp('.html')
     copyfile(src, temp_file)
     render(temp_file, dest)
-    subprocess.check_call(['rm', temp_file])
+    os.remove(temp_file)
 
 
 def download_as_html(args):
@@ -122,7 +122,7 @@ def download_as_html(args):
     temp_file = mktemp('.html')
     get_source(args, temp_file)
     render(temp_file, args.output)
-    subprocess.check_call(['rm', temp_file])
+    os.remove(temp_file)
 
 
 def get_latest_mod(src_file):
@@ -176,7 +176,7 @@ def html_generator(src_file, previous_change, interval):
 
     # Only delete temporary file when generator is terminated.
     finally:
-        subprocess.check_call(['rm', temp_file])
+        os.remove(temp_file)
 
 
 def start_monitoring(src_file, interval):

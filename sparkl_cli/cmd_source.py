@@ -17,8 +17,6 @@ Get source command implementation.
 """
 from __future__ import print_function
 import tempfile
-import subprocess
-
 
 from sparkl_cli.common import get_source
 
@@ -62,7 +60,7 @@ def show_source_as(args):
 
     # Get rid of tempfile.
     finally:
-        subprocess.call(['rm', temp_file])
+        os.remove(temp_file)
 
 
 def command(args):
