@@ -22,13 +22,14 @@ import platform
 import sys
 import time
 import shutil
-import tempfile
 import json
 import posixpath
 import subprocess
+import tempfile
 from http.cookiejar import LWPCookieJar
 import websocket
 import psutil
+
 
 import requests
 from requests.compat import urljoin, urlsplit, urlunparse
@@ -590,3 +591,14 @@ def xsltproc(xsl, src, dst, **params):
     cmd = ["xsltproc"] + args + [xsl, src]
 
     subprocess.check_call(cmd)
+
+
+def mktemp(suffix=".tmp"):
+    """
+    Creates and closes a temporary file, returning its name only.
+    """
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as named:
+        try:
+            return named.name
+        finally:
+            named.close()

@@ -20,10 +20,9 @@ from __future__ import print_function
 from shutil import copyfile
 import os
 import subprocess
-import tempfile
 from time import sleep
 
-from sparkl_cli.common import get_source, transform
+from sparkl_cli.common import get_source, mktemp, transform
 
 DEFAULT_INTERVAL = 3
 
@@ -90,8 +89,7 @@ def show_html(args, local=False):
 
     The temp file is deleted once the source code is returned.
     """
-    _handle, temp_file = tempfile.mkstemp('.html')
-
+    temp_file = mktemp('.html')
     try:
         # Get content of tempfile from local file.
         if local:
@@ -110,7 +108,7 @@ def save_local_as_html(src, dest):
     Saves a local file - 'src' - on the file system as 'dest' and
     transforms it into html.
     """
-    _handle, temp_file = tempfile.mkstemp('.html')
+    temp_file = mktemp('.html')
     copyfile(src, temp_file)
     render(temp_file, dest)
     subprocess.check_call(['rm', temp_file])
@@ -121,7 +119,7 @@ def download_as_html(args):
     Downloads a configuration from a running SPARKL instance.
     The configuration is transformed into html.
     """
-    _handle, temp_file = tempfile.mkstemp('.html')
+    temp_file = mktemp('.html')
     get_source(args, temp_file)
     render(temp_file, args.output)
     subprocess.check_call(['rm', temp_file])
@@ -155,7 +153,7 @@ def html_generator(src_file, previous_change, interval):
             The rate of frequency the XML source file is checked for changes
     """
     # Create a temporary file for storing the changes.
-    _handle, temp_file = tempfile.mkstemp('.html')
+    temp_file = mktemp('.html')
     try:
         # Render the file on first call of the generator.
         yield get_html_content(src_file, temp_file)
