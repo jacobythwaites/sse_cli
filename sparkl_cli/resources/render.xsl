@@ -26,7 +26,7 @@
   xmlns:xi="http://www.w3.org/2001/XInclude"
   exclude-result-prefixes="xsi xi">
 
-  <xsl:output method="html" indent="yes"/>
+  <xsl:output method="html" indent="yes" encoding="UTF-8"/>
 
   <!--
     Generates an HTML document.

@@ -65,10 +65,7 @@ def render(src_path, dst_path):
     Applies the render.xsl transform on src_path to
     generate the content of dst_path.
     """
-    transform(
-        "resources/render.xsl",
-        src_path,
-        dst_path)
+    transform("resources/render.xsl", src_path, dst_path)
 
 
 def get_html_content(src_file, temp_file):
