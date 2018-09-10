@@ -48,9 +48,9 @@
   -->
   <xsl:variable name="outer-vertical">&#x2502;   </xsl:variable>
   <xsl:variable name="non-terminal">&#x251C;&#x2500;&#x2500; </xsl:variable>
-  <xsl:variable name="non-terminal-mix">&#x251D;&#x2500;&#x2500; </xsl:variable>
+  <xsl:variable name="non-terminal-mix">&#x255E;&#x2550;&#x2550; </xsl:variable>
   <xsl:variable name="terminal">&#x2514;&#x2500;&#x2500; </xsl:variable>
-  <xsl:variable name="terminal-mix">&#x2515;&#x2501;&#x2501; </xsl:variable>
+  <xsl:variable name="terminal-mix">&#x2558;&#x2550;&#x2550; </xsl:variable>
   <xsl:variable name="mix-prefix">&#x03BC;  </xsl:variable>
   <xsl:variable name="field-prefix">&#x0192;  </xsl:variable>
   <xsl:variable name="service-prefix">&#x2592;  </xsl:variable>
