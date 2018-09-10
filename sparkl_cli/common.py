@@ -580,7 +580,7 @@ def xsltproc(xsl, src, dst, **params):
     Invokes the xsltproc wrapper around libxml for
     Darwin and Linux systems.
     """
-    args = ["--xincludestyle"]
+    args = []
     if dst:
         args += ["--output", dst]
 

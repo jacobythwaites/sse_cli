@@ -1,3 +1,4 @@
+<script><![CDATA[
 /**
  * Copyright 2018 SPARKL Limited
  *
@@ -62,3 +63,4 @@ if (query) {
       }, delay);
   }
 }
+]]></script>

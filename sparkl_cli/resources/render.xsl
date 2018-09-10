@@ -422,18 +422,14 @@
     Javascript inline.
   -->
   <xsl:template name="js">
-    <script>
-      <xi:include href="render.js" parse="text"/>
-    </script>
+    <xsl:copy-of select="document('render.js')/script"/>
   </xsl:template>
 
   <!--
     CSS stylesheet inline.
   -->
   <xsl:template name="css">
-    <style>
-      <xi:include href="render.css" parse="text"/>
-    </style>
+    <xsl:copy-of select="document('render.css')/style"/>
   </xsl:template>
 
 </xsl:stylesheet>
