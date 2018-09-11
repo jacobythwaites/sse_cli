@@ -13,7 +13,7 @@
 # limitations under the License.
 # Invoke with PYTHON_VERSION=2 (default) or 3
 PYTHON ?= python
-ifeq ($(findstring "Python 2", $(shell $(PYTHON) --version)), "")
+ifeq '$(shell $(PYTHON) sparkl_cli/python_version.py)' '2'
 $(info Your $(PYTHON) is version 2)
 PEP8 := pep8
 DEPS := \
