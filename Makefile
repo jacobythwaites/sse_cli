@@ -12,19 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # Invoke with PYTHON_VERSION=2 (default) or 3
-PYTHON_VERSION ?= 2
-ifeq ($(PYTHON_VERSION), 2)
-PYTHON := python
+PYTHON ?= python
+ifeq ($(findstring "Python 2", $(shell $(PYTHON) --version)), "")
+$(info Your $(PYTHON) is version 2)
 PEP8 := pep8
-PYLINT := pylint
-PIP := pip
-PYDOC := pydoc
+DEPS := \
+	argparse \
+	certifi \
+	elasticsearch \
+	pep8  \
+	psutil \
+	pylint \
+	pytest \
+	requests \
+	websocket-client \
+	pytest_localserver
 else
-PYTHON := python3
+$(info Your $(PYTHON) is version 3)
 PEP8 := pycodestyle
-PYLINT := pylint
-PIP := pip3
-PYDOC := pydoc3
+DEPS := \
+	argparse \
+	certifi \
+	elasticsearch \
+	pycodestyle \
+	psutil \
+	pylint \
+	pytest \
+	requests \
+	websocket-client \
+	pytest_localserver
 endif
 
 VERSION := $(shell git describe --tags --long --abbrev=1)
@@ -39,43 +55,13 @@ default: help ;
 #################################
 # DEPENDENCIES DIFFER IN PYTHON 3
 #################################
-ifeq ($(PYTHON_VERSION), 2)
-DEPS := \
-	argparse \
-	certifi \
-	elasticsearch \
-	pep8  \
-	psutil \
-	pylint \
-	pytest \
-	requests \
-	websocket-client \
-	pytest_localserver
-else
-DEPS := \
-	argparse \
-	certifi \
-	elasticsearch \
-	pycodestyle \
-	psutil \
-	pylint \
-	pytest \
-	requests \
-	websocket-client \
-	pytest_localserver
-endif
-
 .PHONY: deps
 deps:
-ifeq  '$(shell which $(PIP))'  ''
-	@echo "Missing $(PIP), required for compile target"
-	@echo "Consider '[apt-get|brew] install python-$(PIP)'"
-endif
 ifeq  '$(shell which pandoc)'  ''
 	@echo "Missing pandoc, required for 'rel' target"
 	@echo "Consider '[apt-get|brew] install pandoc'"
 endif
-	@$(PIP) install --user -q $(DEPS)
+	@$(PYTHON) -m pip install --user -q $(DEPS)
 
 #####
 # ALL
@@ -90,8 +76,8 @@ all: clean lint compile docs test rel
 lint:
 	@echo Running $(PEP8)
 	@$(PYTHON) -m $(PEP8) sparkl_cli
-	@echo Running $(PYLINT)
-	@$(PYTHON) -m $(PYLINT) --ignore=test sparkl_cli
+	@echo Running pylint
+	@$(PYTHON) -m pylint --ignore=test sparkl_cli
 
 #########
 # COMPILE
@@ -100,7 +86,7 @@ lint:
 .PHONY: compile
 compile:
 	@$(PYTHON) -m compileall sparkl_cli
-	@echo ${VERSION} > sparkl_cli/version.txt
+	@echo $(VERSION) > sparkl_cli/version.txt
 
 .PHONY: clean_compile
 	@find . -name "*.pyc" -exec rm {} \;
@@ -110,9 +96,9 @@ compile:
 ######
 .PHONY: docs
 docs:
-	@echo "Please use $(PYDOC). For example:"
-	@echo "  $(PYDOC) sparkl_cli"
-	@echo "  $(PYDOC) sparkl_cli.cmd_call"
+	@echo "Please use $(PYTHON) -m pydoc. For example:"
+	@echo "  $(PYTHON) -m pydoc sparkl_cli"
+	@echo "  $(PYTHON) -m pydoc sparkl_cli.cmd_call"
 	@echo
 
 ######
@@ -166,20 +152,6 @@ clean_rel:
 	@rm -f setup.py README.txt MANIFEST
 	@rm -rf dist
 
-#########
-# INSTALL
-#########
-.PHONY: install
-install: rel
-	@sudo -H $(PIP) install $(firstword $(wildcard dist/*.gz))
-
-###########
-# UNINSTALL
-###########
-.PHONY: uninstall
-uninstall:
-	@sudo -H $(PIP) uninstall sparkl_cli
-
 #######
 # CLEAN
 #######
@@ -193,7 +165,7 @@ clean: clean_compile clean_rel ;
 help:
 	@echo "SPARKL CLI Makefile"
 	@echo "-------------------"
-	@echo "Using $(PYTHON) because PYTHON_VERSION=$(PYTHON_VERSION)"
+	@echo "Using $(PYTHON)"
 	@echo
 	@echo "Specify one or more targets as follows:"
 	@echo
@@ -204,28 +176,21 @@ help:
 	@echo "    Compiles sources"
 	@echo
 	@echo "  lint"
-	@echo "    Runs $(PEP8) and $(PYLINT) against sources"
+	@echo "    Runs $(PEP8) and pylint against sources"
 	@echo
 	@echo "  deps"
-	@echo "    installs dependencies using $(PIP)"
+	@echo "    installs dependencies using pip"
 	@echo
 	@echo "  docs"
 	@echo "    explains how to view code documentation"
 	@echo
 	@echo "  help"
 	@echo "    shows this help"
-	@echo
-	@echo "  install"
-	@echo "    installs the release globally using 'sudo -H $(PIP) install'"
-	@echo
 	@echo "  rel"
 	@echo "    creates a release in the 'dist' directory using 'setuptools'"
 	@echo
 	@echo "  test"
 	@echo "    runs tests using 'pytest' (see below)"
-	@echo
-	@echo "  uninstall"
-	@echo "    uninstalls the release globally using 'sudo -H $(PIP) uninstall"
 	@echo
 	@echo "Tests require the following environment variables to be set:"
 	@echo "  TEST_SSE  - the url of the SPARKL node to be used"
