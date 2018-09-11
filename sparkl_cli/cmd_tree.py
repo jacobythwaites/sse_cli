@@ -47,7 +47,7 @@ def parse_args(subparser):
         type=str,
         default="service,field,notify,solicit,"
                 "response,request,reply,consume",
-        help="comma separated tags to include in addition to mix,folder")
+        help="comma separated tags to include")
 
     subparser.add_argument(
         "source",

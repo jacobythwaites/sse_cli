@@ -452,36 +452,39 @@ def show_struct(json_object, indent=0):
     if json_object is None:
         return
 
-    if not isinstance(json_object, dict):
+    if isinstance(json_object, dict) and "tag" in json_object:
+        if indent > 0:
+            print()
 
-        # If not nested in a struct, just output the content.
-        if indent == 0:
-            print(json_object)
+        tag = json_object["tag"]
+        indent_print(ANSI_TAG + tag + ANSI_END)
 
-        # If nested in a struct, output separator lines.
-        else:
-            print("~~~~")
-            print(json_object)
-            print("~~~~")
+        if "attr" in json_object:
+            keys = json_object["attr"].keys()
+            for key in sorted(keys):
+                indent_print(
+                    key + ":",
+                    json_object["attr"][key])
+
+        if "content" in json_object:
+            for content_object in json_object["content"]:
+                show_struct(content_object, indent + 1)
 
         return
 
-    if indent > 0:
-        print()
+    raw = json_object
+    if isinstance(json_object, dict):
+        raw = json.dumps(json_object, indent=4)
 
-    tag = json_object["tag"]
-    indent_print(ANSI_TAG + tag + ANSI_END)
+    # If not nested in a struct, just output the content.
+    if indent == 0:
+        print(raw)
 
-    if "attr" in json_object:
-        keys = json_object["attr"].keys()
-        for key in sorted(keys):
-            indent_print(
-                key + ":",
-                json_object["attr"][key])
-
-    if "content" in json_object:
-        for content_object in json_object["content"]:
-            show_struct(content_object, indent + 1)
+    # If nested in a struct, output separator lines.
+    else:
+        print("~~~~")
+        print(raw)
+        print("~~~~")
 
 
 def read_terms():
