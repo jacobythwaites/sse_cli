@@ -18,9 +18,8 @@ Get source command implementation.
 from __future__ import print_function
 
 import os
-import tempfile
 
-from sparkl_cli.common import get_source
+from sparkl_cli.common import get_source, mktemp
 
 
 def parse_args(subparser):
@@ -51,7 +50,7 @@ def show_source_as(args):
     """
 
     # Create a temporary file.
-    (_handle, temp_file) = tempfile.mkstemp()
+    temp_file = mktemp()
     try:
         # Get content of tempfile from local file.
         get_source(args, temp_file)

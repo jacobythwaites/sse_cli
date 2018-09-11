@@ -21,7 +21,6 @@ import os
 import types
 import glob
 import xml.dom.minidom
-import tempfile
 from shutil import copyfile
 from multiprocessing import Process
 from time import sleep
@@ -30,6 +29,7 @@ import socketserver
 import requests
 
 from sparkl_cli.main import sparkl
+from sparkl_cli.common import mktemp
 
 TEST_SSE = os.environ.get("TEST_SSE")
 TEST_USER = os.environ.get("TEST_USER")
@@ -149,7 +149,7 @@ class Tests():
     def test_render_local_monitor(self):
 
         # Create temporary file and copy Primes into it
-        _handle, temp_path = tempfile.mkstemp('.xml')
+        temp_path = mktemp(".xml")
         copyfile(PRIMES_FILE_PATH, temp_path)
 
         # Start monitoring in a separate process

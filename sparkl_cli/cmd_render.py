@@ -89,7 +89,6 @@ def show_html(args, local=False):
     The temp file is deleted once the source code is returned.
     """
     temp_file = mktemp('.html')
-    print(temp_file)
     try:
         # Get content of tempfile from local file.
         if local:
