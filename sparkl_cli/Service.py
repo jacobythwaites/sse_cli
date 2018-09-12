@@ -24,7 +24,6 @@ to perform client operations.
 """
 from __future__ import print_function
 
-import sys
 import json
 import random
 import string
