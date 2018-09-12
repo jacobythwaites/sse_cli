@@ -24,6 +24,7 @@ to perform client operations.
 """
 from __future__ import print_function
 
+import sys
 import json
 import random
 import string
@@ -109,10 +110,8 @@ class Service(threading.Thread):
                         self.__request(term)
                     elif "response" in term:
                         self.__response(term)
-        except BaseException:
-            pass
-
-        self.close()
+        finally:
+            self.close()
 
     def notify(self, notify):
         """
