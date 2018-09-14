@@ -109,10 +109,8 @@ class Service(threading.Thread):
                         self.__request(term)
                     elif "response" in term:
                         self.__response(term)
-        except BaseException:
-            pass
-
-        self.close()
+        finally:
+            self.close()
 
     def notify(self, notify):
         """
