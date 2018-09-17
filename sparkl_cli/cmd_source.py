@@ -19,7 +19,7 @@ from __future__ import print_function
 
 import os
 
-from sparkl_cli.common import get_source, mktemp
+from sparkl_cli.common import get_source, mktemp_pathname
 
 
 def parse_args(subparser):
@@ -50,7 +50,7 @@ def show_source_as(args):
     """
 
     # Create a temporary file.
-    temp_file = mktemp()
+    temp_file = mktemp_pathname()
     try:
         # Get content of tempfile from local file.
         get_source(args, temp_file)

@@ -593,7 +593,7 @@ def xsltproc(xsl, src, dst, **params):
     subprocess.check_call(cmd)
 
 
-def mktemp(suffix=".tmp"):
+def mktemp_pathname(suffix=".tmp"):
     """
     Creates and closes a temporary file, returning its name only.
     """

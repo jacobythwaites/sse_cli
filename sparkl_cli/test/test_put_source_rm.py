@@ -29,7 +29,7 @@ import socketserver
 import requests
 
 from sparkl_cli.main import sparkl
-from sparkl_cli.common import mktemp
+from sparkl_cli.common import mktemp_pathname
 
 TEST_SSE = os.environ.get("TEST_SSE")
 TEST_USER = os.environ.get("TEST_USER")
@@ -149,7 +149,7 @@ class Tests():
     def test_render_local_monitor(self):
 
         # Create temporary file and copy Primes into it
-        temp_path = mktemp(".xml")
+        temp_path = mktemp_pathname(".xml")
         copyfile(PRIMES_FILE_PATH, temp_path)
 
         # Start monitoring in a separate process

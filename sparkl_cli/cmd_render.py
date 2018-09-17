@@ -21,7 +21,7 @@ from shutil import copyfile
 import os
 from time import sleep
 
-from sparkl_cli.common import get_source, mktemp, transform
+from sparkl_cli.common import get_source, mktemp_pathname, transform
 
 DEFAULT_INTERVAL = 3
 
@@ -88,7 +88,7 @@ def show_html(args, local=False):
 
     The temp file is deleted once the source code is returned.
     """
-    temp_file = mktemp('.html')
+    temp_file = mktemp_pathname('.html')
     try:
         # Get content of tempfile from local file.
         if local:
@@ -107,7 +107,7 @@ def save_local_as_html(src, dest):
     Saves a local file - 'src' - on the file system as 'dest' and
     transforms it into html.
     """
-    temp_file = mktemp('.html')
+    temp_file = mktemp_pathname('.html')
     copyfile(src, temp_file)
     render(temp_file, dest)
     os.remove(temp_file)
@@ -118,7 +118,7 @@ def download_as_html(args):
     Downloads a configuration from a running SPARKL instance.
     The configuration is transformed into html.
     """
-    temp_file = mktemp('.html')
+    temp_file = mktemp_pathname('.html')
     get_source(args, temp_file)
     render(temp_file, args.output)
     os.remove(temp_file)
@@ -152,7 +152,7 @@ def html_generator(src_file, previous_change, interval):
             The rate of frequency the XML source file is checked for changes
     """
     # Create a temporary file for storing the changes.
-    temp_file = mktemp('.html')
+    temp_file = mktemp_pathname('.html')
     try:
         # Render the file on first call of the generator.
         yield get_html_content(src_file, temp_file)

@@ -24,7 +24,7 @@ import requests
 
 from sparkl_cli.common import (
     get_current_folder,
-    mktemp,
+    mktemp_pathname,
     resolve,
     sync_request)
 
@@ -70,7 +70,7 @@ def command(args):
 
         if is_url(upload_path):
             response = requests.get(upload_path)
-            temp_path = mktemp(".xml")
+            temp_path = mktemp_pathname(".xml")
 
             with open(temp_path, "w") as content:
                 content.write(response.text)

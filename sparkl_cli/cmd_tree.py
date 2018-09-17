@@ -19,7 +19,7 @@ from __future__ import print_function
 
 import os
 
-from sparkl_cli.common import get_source, mktemp, transform
+from sparkl_cli.common import get_source, mktemp_pathname, transform
 
 
 def parse_args(subparser):
@@ -86,7 +86,7 @@ def command(args):
         render(args, args.source)
         return
 
-    temp_file = mktemp(".xml")
+    temp_file = mktemp_pathname(".xml")
     try:
         get_source(args, temp_file)
         render(args, temp_file)
