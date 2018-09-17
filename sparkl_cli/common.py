@@ -598,7 +598,4 @@ def mktemp_pathname(suffix=".tmp"):
     Creates and closes a temporary file, returning its name only.
     """
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as named:
-        try:
-            return named.name
-        finally:
-            named.close()
+        return named.name
