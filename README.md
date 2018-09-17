@@ -13,6 +13,8 @@ Choose your python executable name by exporting the `PYTHON=` env var, then use 
 3. `make rel` to create distribution in `dist` directory (use `pip install` to install it).
 
 # Run
+To run from the repo root, use `python -m sparkl_cli`. If installed, use `sparkl`.
+
 Use `sparkl -h` to see help as follows:
 
 ```
