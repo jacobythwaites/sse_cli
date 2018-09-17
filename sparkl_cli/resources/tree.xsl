@@ -25,7 +25,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   exclude-result-prefixes="xsi">
 
-  <xsl:output method="text"/>
+  <xsl:output method="text" encoding="UTF-8"/>
 
   <!--
     Flag to control detail on the line for each entry.
@@ -40,6 +40,29 @@
     folder,mix,service,field,notify,solicit,
     response,request,reply,consume,prop
   </xsl:param>
+
+  <!--
+    See https://www.w3schools.com/charsets/ref_utf_box.asp
+    Note that the Windows console must be set to UTF8 using
+    the chcp 65001 command.
+  -->
+  <xsl:variable name="outer-vertical">&#x2502;   </xsl:variable>
+  <xsl:variable name="non-terminal">&#x251C;&#x2500;&#x2500; </xsl:variable>
+  <xsl:variable name="non-terminal-mix">&#x255E;&#x2550;&#x2550; </xsl:variable>
+  <xsl:variable name="terminal">&#x2514;&#x2500;&#x2500; </xsl:variable>
+  <xsl:variable name="terminal-mix">&#x2558;&#x2550;&#x2550; </xsl:variable>
+  <xsl:variable name="mix-prefix">&#x03BC;  </xsl:variable>
+  <xsl:variable name="field-prefix">&#x0192;  </xsl:variable>
+  <xsl:variable name="service-prefix">&#x2592;  </xsl:variable>
+  <xsl:variable name="notify-prefix">&gt;&gt; </xsl:variable>
+  <xsl:variable name="solicit-prefix">&gt;&gt; </xsl:variable>
+  <xsl:variable name="response-prefix">&lt;&lt; </xsl:variable>
+  <xsl:variable name="request-prefix">&lt;  </xsl:variable>
+  <xsl:variable name="request-reply-prefix">&gt;  </xsl:variable>
+  <xsl:variable name="consume-prefix">&lt;&lt; </xsl:variable>
+  <xsl:variable name="consume-reply-prefix">&gt;&gt; </xsl:variable>
+  <xsl:variable name="prop-prefix">&#x25CB;  </xsl:variable>
+  <xsl:variable name="content-indicator"> &#x00B6;</xsl:variable>
 
   <!--
     Document root.
@@ -91,7 +114,7 @@
       <xsl:when test="position()!=last()">
         <xsl:choose>
           <xsl:when test="following-sibling::*[contains($tags,local-name())]">
-            <xsl:text>│   </xsl:text>
+            <xsl:value-of select="$outer-vertical"/>
           </xsl:when>
 
           <xsl:otherwise>
@@ -108,11 +131,11 @@
           <xsl:when test="following-sibling::*[contains($tags,local-name())]">
             <xsl:choose>
               <xsl:when test="local-name()='mix'">
-                <xsl:text>╞══ </xsl:text>
+                <xsl:value-of select="$non-terminal-mix"/>
               </xsl:when>
 
               <xsl:otherwise>
-                <xsl:text>├── </xsl:text>
+                <xsl:value-of select="$non-terminal"/>
               </xsl:otherwise>
             </xsl:choose>
 
@@ -121,11 +144,11 @@
           <xsl:otherwise>
             <xsl:choose>
               <xsl:when test="local-name()='mix'">
-                <xsl:text>╘══ </xsl:text>
+                <xsl:value-of select="$terminal-mix"/>
               </xsl:when>
 
               <xsl:otherwise>
-                <xsl:text>└── </xsl:text>
+                <xsl:value-of select="$terminal"/>
               </xsl:otherwise>
             </xsl:choose>
 
@@ -145,14 +168,14 @@
   </xsl:template>
 
   <xsl:template match="mix" mode="leaf">
-    <xsl:text>µ </xsl:text>
+    <xsl:value-of select="$mix-prefix"/>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="grants"/>
   </xsl:template>
 
   <xsl:template match="field" mode="leaf">
-    <xsl:text>ƒ </xsl:text>
+    <xsl:value-of select="$field-prefix"/>
     <xsl:value-of select="@name"/>
 
     <xsl:if test="$detail and @type">
@@ -162,7 +185,7 @@
   </xsl:template>
 
   <xsl:template match="service" mode="leaf">
-    <xsl:text>▒ </xsl:text>
+    <xsl:value-of select="$service-prefix"/>
     <xsl:value-of select="@name"/>
 
     <xsl:if test="$detail">
@@ -174,7 +197,7 @@
   </xsl:template>
 
   <xsl:template match="notify" mode="leaf">
-    <xsl:text>&gt;&gt; </xsl:text>
+    <xsl:value-of select="$notify-prefix"/>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="service_ref"/>
@@ -182,7 +205,7 @@
   </xsl:template>
 
   <xsl:template match="solicit" mode="leaf">
-    <xsl:text>&gt;&gt; </xsl:text>
+    <xsl:value-of select="$solicit-prefix"/>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="service_ref"/>
@@ -190,7 +213,7 @@
   </xsl:template>
 
   <xsl:template match="request" mode="leaf">
-    <xsl:text>&lt;  </xsl:text>
+    <xsl:value-of select="$request-prefix"/>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="service_ref"/>
@@ -198,7 +221,7 @@
   </xsl:template>
 
   <xsl:template match="consume" mode="leaf">
-    <xsl:text>&lt;&lt; </xsl:text>
+    <xsl:value-of select="$consume-prefix"/>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="service_ref"/>
@@ -206,28 +229,28 @@
   </xsl:template>
 
   <xsl:template match="response" mode="leaf">
-    <xsl:text>&lt;&lt; </xsl:text>
+    <xsl:value-of select="$response-prefix"/>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="field_refs"/>
   </xsl:template>
 
   <xsl:template match="request/reply" mode="leaf">
-    <xsl:text>&gt; </xsl:text>
+    <xsl:value-of select="$request-reply-prefix"/>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="field_refs"/>
   </xsl:template>
 
   <xsl:template match="consume/reply" mode="leaf">
-    <xsl:text>&gt;&gt; </xsl:text>
+    <xsl:value-of select="$consume-reply-prefix"/>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="field_refs"/>
   </xsl:template>
 
   <xsl:template match="prop" mode="leaf">
-    <xsl:text>○ </xsl:text>
+    <xsl:value-of select="$prop-prefix"/>
     <xsl:value-of select="@name"/>
 
     <xsl:call-template name="prop-detail"/>
@@ -270,7 +293,7 @@
       </xsl:for-each>
 
       <xsl:if test="text()">
-        <xsl:text> ¶</xsl:text>
+        <xsl:value-of select="$content-indicator"/>
       </xsl:if>
     </xsl:if>
   </xsl:template>

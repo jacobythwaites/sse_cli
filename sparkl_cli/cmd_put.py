@@ -17,14 +17,14 @@ Upload source command implementation.
 """
 from __future__ import print_function
 
-import tempfile
-import subprocess
+import os
 import re
 import requests
 
 
 from sparkl_cli.common import (
     get_current_folder,
+    mktemp_pathname,
     resolve,
     sync_request)
 
@@ -70,9 +70,9 @@ def command(args):
 
         if is_url(upload_path):
             response = requests.get(upload_path)
-            _handle, temp_path = tempfile.mkstemp(suffix='.xml')
+            temp_path = mktemp_pathname(".xml")
 
-            with open(temp_path, 'w') as content:
+            with open(temp_path, "w") as content:
                 content.write(response.text)
 
             upload_path = temp_path
@@ -93,4 +93,4 @@ def command(args):
 
     finally:
         if to_delete:
-            subprocess.call(['rm', to_delete])
+            os.remove(to_delete)

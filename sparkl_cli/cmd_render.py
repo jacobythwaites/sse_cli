@@ -19,11 +19,9 @@ from __future__ import print_function
 
 from shutil import copyfile
 import os
-import subprocess
-import tempfile
 from time import sleep
 
-from sparkl_cli.common import get_source, transform
+from sparkl_cli.common import get_source, mktemp_pathname, transform
 
 DEFAULT_INTERVAL = 3
 
@@ -65,11 +63,7 @@ def render(src_path, dst_path):
     Applies the render.xsl transform on src_path to
     generate the content of dst_path.
     """
-    transform(
-        "resources/render.xsl",
-        src_path,
-        ["--xincludestyle"],
-        dst_path)
+    transform("resources/render.xsl", src_path, dst_path)
 
 
 def get_html_content(src_file, temp_file):
@@ -94,8 +88,7 @@ def show_html(args, local=False):
 
     The temp file is deleted once the source code is returned.
     """
-    _handle, temp_file = tempfile.mkstemp('.html')
-
+    temp_file = mktemp_pathname('.html')
     try:
         # Get content of tempfile from local file.
         if local:
@@ -106,7 +99,7 @@ def show_html(args, local=False):
         return get_html_content(temp_file, temp_file)
 
     finally:
-        subprocess.check_call(['rm', temp_file])
+        os.remove(temp_file)
 
 
 def save_local_as_html(src, dest):
@@ -114,10 +107,10 @@ def save_local_as_html(src, dest):
     Saves a local file - 'src' - on the file system as 'dest' and
     transforms it into html.
     """
-    _handle, temp_file = tempfile.mkstemp('.html')
+    temp_file = mktemp_pathname('.html')
     copyfile(src, temp_file)
     render(temp_file, dest)
-    subprocess.check_call(['rm', temp_file])
+    os.remove(temp_file)
 
 
 def download_as_html(args):
@@ -125,10 +118,10 @@ def download_as_html(args):
     Downloads a configuration from a running SPARKL instance.
     The configuration is transformed into html.
     """
-    _handle, temp_file = tempfile.mkstemp('.html')
+    temp_file = mktemp_pathname('.html')
     get_source(args, temp_file)
     render(temp_file, args.output)
-    subprocess.check_call(['rm', temp_file])
+    os.remove(temp_file)
 
 
 def get_latest_mod(src_file):
@@ -159,7 +152,7 @@ def html_generator(src_file, previous_change, interval):
             The rate of frequency the XML source file is checked for changes
     """
     # Create a temporary file for storing the changes.
-    _handle, temp_file = tempfile.mkstemp('.html')
+    temp_file = mktemp_pathname('.html')
     try:
         # Render the file on first call of the generator.
         yield get_html_content(src_file, temp_file)
@@ -182,7 +175,7 @@ def html_generator(src_file, previous_change, interval):
 
     # Only delete temporary file when generator is terminated.
     finally:
-        subprocess.check_call(['rm', temp_file])
+        os.remove(temp_file)
 
 
 def start_monitoring(src_file, interval):

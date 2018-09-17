@@ -18,9 +18,8 @@ Show text tree command implementation.
 from __future__ import print_function
 
 import os
-import tempfile
 
-from sparkl_cli.common import get_source, transform
+from sparkl_cli.common import get_source, mktemp_pathname, transform
 
 
 def parse_args(subparser):
@@ -65,19 +64,16 @@ def render(args, src_path):
     tags = "mix,folder," + args.include
     if args.props:
         tags += ",prop"
+    tags = "\"" + tags + "\""
 
     detail = "false()"
     if args.all:
         detail = "true()"
 
-    xsl_args = [
-        "--stringparam", "tags", tags,
-        "--param", "detail", detail]
-
     transform(
-        "resources/tree.xsl",
-        src_path,
-        xsl_args)
+        "resources/tree.xsl", src_path, None,
+        tags=tags,
+        detail=detail)
 
 
 def command(args):
@@ -88,14 +84,13 @@ def command(args):
     """
     if args.file:
         render(args, args.source)
+        return
 
-    else:
-        (_handle, temp_file) = tempfile.mkstemp()
-        try:
-            # Get content of tempfile from local file.
-            get_source(args, temp_file)
-            render(args, temp_file)
+    temp_file = mktemp_pathname(".xml")
+    try:
+        get_source(args, temp_file)
+        render(args, temp_file)
 
-        # Remove tempfile.
-        finally:
-            os.remove(temp_file)
+    # Remove tempfile.
+    finally:
+        os.remove(temp_file)

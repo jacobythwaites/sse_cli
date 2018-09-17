@@ -18,16 +18,18 @@ Utility module for common functions.
 from __future__ import print_function
 
 import os
+import platform
 import sys
 import time
 import shutil
-import tempfile
 import json
 import posixpath
 import subprocess
+import tempfile
 from http.cookiejar import LWPCookieJar
 import websocket
 import psutil
+
 
 import requests
 from requests.compat import urljoin, urlsplit, urlunparse
@@ -457,7 +459,10 @@ def show_struct(json_object, indent=0):
             print()
 
         tag = json_object["tag"]
-        indent_print(ANSI_TAG + tag + ANSI_END)
+        if platform.system() == "Windows":
+            indent_print(tag)
+        else:
+            indent_print(ANSI_TAG + tag + ANSI_END)
 
         if "attr" in json_object:
             keys = json_object["attr"].keys()
@@ -533,7 +538,7 @@ def get_source(args, src_path):
         output_file.write(response.text)
 
 
-def transform(xsl, src, args=None, dst=None):
+def transform(xsl, src, dst=None, **params):
     """
     Wraps xsltproc to transform the src file using xsl and args
     into the dst file (stdout if None).
@@ -541,18 +546,56 @@ def transform(xsl, src, args=None, dst=None):
     The xsl file is resolved relative to our package directory,
     but that doesn't apply to src or dst.
 
-    Args is just a list of strings forming argv for xsltproc.
+    The params are passed to the processor. Each value must be
+    a valid xpath value, i.e. a string MUST be literally quoted.
     """
     xsl = os.path.join(
         os.path.dirname(__file__),
         xsl)
 
-    if not args:
-        args = []
+    if platform.system() == "Windows":
+        msxsl(xsl, src, dst, **params)
+    else:
+        xsltproc(xsl, src, dst, **params)
 
+
+def msxsl(xsl, src, dst, **params):
+    """
+    Invokes the msxsl wrapper around msxml for
+    Windows systems.
+    """
+    args = []
+    if dst:
+        args += ["-o", dst]
+
+    for key, value in params.items():
+        args += [key + "=" + value]
+
+    cmd = ["msxsl"] + [src, xsl] + args
+
+    subprocess.check_call(cmd)
+
+
+def xsltproc(xsl, src, dst, **params):
+    """
+    Invokes the xsltproc wrapper around libxml for
+    Darwin and Linux systems.
+    """
+    args = []
     if dst:
         args += ["--output", dst]
+
+    for key, value in params.items():
+        args += ["--param", key, value]
 
     cmd = ["xsltproc"] + args + [xsl, src]
 
     subprocess.check_call(cmd)
+
+
+def mktemp_pathname(suffix=".tmp"):
+    """
+    Creates and closes a temporary file, returning its name only.
+    """
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as named:
+        return named.name

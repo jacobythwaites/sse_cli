@@ -26,7 +26,7 @@
   xmlns:xi="http://www.w3.org/2001/XInclude"
   exclude-result-prefixes="xsi xi">
 
-  <xsl:output method="html" indent="yes"/>
+  <xsl:output method="html" indent="yes" encoding="UTF-8"/>
 
   <!--
     Generates an HTML document.
@@ -422,18 +422,14 @@
     Javascript inline.
   -->
   <xsl:template name="js">
-    <script>
-      <xi:include href="render.js" parse="text"/>
-    </script>
+    <xsl:copy-of select="document('render.js')/script"/>
   </xsl:template>
 
   <!--
     CSS stylesheet inline.
   -->
   <xsl:template name="css">
-    <style>
-      <xi:include href="render.css" parse="text"/>
-    </style>
+    <xsl:copy-of select="document('render.css')/style"/>
   </xsl:template>
 
 </xsl:stylesheet>
