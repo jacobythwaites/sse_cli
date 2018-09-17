@@ -6,25 +6,24 @@ Console CLI interface for managing running SPARKL nodes.
 Get the latest from [releases](/releases).
 
 # Build
-Choose python or python3 by setting the `PYTHON_VERSION` env var, then use `make` as follows:
+Choose your python executable name by exporting the `PYTHON=` env var, then use `make` as follows:
 
-1. `export PYTHON_VERSION=3` (assuming you want to use Python3, default is 2).
+1. `export PYTHON=python3` (assuming your executable is `python3`, default is just `python`).
 2. `make deps` to set up dependencies.
-3. `make rel` to create distribution in `dist` directory.
-4. `make install` to install. Use `sudo -H make install` if necessary.
+3. `make rel` to create distribution in `dist` directory (use `pip install` to install it).
 
 # Run
 Use `sparkl -h` to see help as follows:
 
 ```
 usage: sparkl_cli [-h] [-v] [-a ALIAS] [-s SESSION] [-t TIMEOUT]
-                  {active,call,cd,close,connect,elastic,listen,login,logout,ls,mkdir,node,object,put,render,rm,service,session,source,start,stop,undo,vars}
+                  {active,call,cd,close,connect,elastic,listen,login,logout,ls,mkdir,node,object,put,render,rm,service,session,source,start,stop,tree,undo,vars}
                   ...
 
 SPARKL command line utility.
 
 positional arguments:
-  {active,call,cd,close,connect,elastic,listen,login,logout,ls,mkdir,node,object,put,render,rm,service,session,source,start,stop,undo,vars}
+  {active,call,cd,close,connect,elastic,listen,login,logout,ls,mkdir,node,object,put,render,rm,service,session,source,start,stop,tree,undo,vars}
     active              list active services
     call                invoke a transaction or individual operation
     cd                  show or change current folder
@@ -46,6 +45,7 @@ positional arguments:
     source              view [and download] source configuration
     start               start a service
     stop                stop one or more services
+    tree                show source in tree-like format
     undo                undo last change
     vars                set field variables
 
@@ -60,6 +60,7 @@ optional arguments:
                         request timeout in seconds, default 0 means no timeout
 
 Use 'sparkl_cli <cmd> -h' for subcommand help
+
 
 ```
 
