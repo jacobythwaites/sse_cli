@@ -15,32 +15,8 @@
 PYTHON ?= python
 ifeq '$(shell $(PYTHON) sparkl_cli/python_version.py)' '2'
 $(info Your $(PYTHON) is version 2)
-PEP8 := pep8
-DEPS := \
-	argparse \
-	certifi \
-	elasticsearch \
-	pep8  \
-	psutil \
-	pylint \
-	pytest \
-	requests \
-	websocket-client \
-	pytest_localserver
 else
 $(info Your $(PYTHON) is version 3)
-PEP8 := pycodestyle
-DEPS := \
-	argparse \
-	certifi \
-	elasticsearch \
-	pycodestyle \
-	psutil \
-	pylint \
-	pytest \
-	requests \
-	websocket-client \
-	pytest_localserver
 endif
 
 VERSION := $(shell git describe --tags --long --abbrev=1)
@@ -61,7 +37,7 @@ ifeq  '$(shell which pandoc)'  ''
 	@echo "Missing pandoc, required for 'rel' target"
 	@echo "Consider '[apt-get|brew] install pandoc'"
 endif
-	@$(PYTHON) -m pip install --user -q $(DEPS)
+	@$(PYTHON) -m pip install -r requirements.txt
 
 #####
 # ALL
@@ -74,9 +50,6 @@ all: clean lint compile docs test rel
 ######
 .PHONY: lint
 lint:
-	@echo Running $(PEP8)
-	@$(PYTHON) -m $(PEP8) sparkl_cli
-	@echo Running pylint
 	@$(PYTHON) -m pylint --ignore=test sparkl_cli
 
 #########

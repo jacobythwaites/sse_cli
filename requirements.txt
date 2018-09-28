@@ -1,0 +1,10 @@
+argparse
+certifi
+elasticsearch
+pycodestyle
+psutil
+pylint
+pytest
+requests
+websocket-client
+pytest_localserver
