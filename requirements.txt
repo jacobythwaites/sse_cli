@@ -1,5 +1,6 @@
 argparse
 certifi
+cookiejar
 elasticsearch
 pycodestyle
 psutil
