@@ -34,6 +34,7 @@ import psutil
 import requests
 from requests.compat import urljoin, urlsplit, urlunparse
 from requests.utils import dict_from_cookiejar
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from sparkl_cli.CliException import (
     CliException)
@@ -314,6 +315,11 @@ def sync_request(
     session.cookies = unpickle_cookies(args)
 
     base = connection.get("url")
+    verify = connection.get("verify")
+    if not verify:
+        requests.packages.urllib3.disable_warnings(
+            InsecureRequestWarning)
+
     request_url = urljoin(base, href)
     if not headers:
         headers = {}
@@ -324,7 +330,8 @@ def sync_request(
             request_url,
             headers=headers,
             params=params,
-            timeout=timeout)
+            timeout=timeout,
+            verify=verify)
 
     elif method.upper() == "POST":
         response = session.post(
@@ -332,14 +339,16 @@ def sync_request(
             headers=headers,
             params=params,
             data=data,
-            timeout=timeout)
+            timeout=timeout,
+            verify=verify)
 
     elif method.upper() == "DELETE":
         response = session.delete(
             request_url,
             headers=headers,
             params=params,
-            timeout=timeout)
+            timeout=timeout,
+            verify=verify)
 
     pickle_cookies(session.cookies)
     return response
