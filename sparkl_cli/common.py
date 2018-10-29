@@ -30,11 +30,11 @@ from http.cookiejar import LWPCookieJar
 import websocket
 import psutil
 
-
 import requests
 from requests.compat import urljoin, urlsplit, urlunparse
 from requests.utils import dict_from_cookiejar
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+import urllib3
 
 from sparkl_cli.CliException import (
     CliException)
@@ -317,8 +317,8 @@ def sync_request(
     base = connection.get("url")
     verify = connection.get("verify")
     if not verify:
-        requests.packages.urllib3.disable_warnings(
-            InsecureRequestWarning)
+        urllib3.disable_warnings(
+            urllib3.exceptions.InsecureRequestWarning)
 
     request_url = urljoin(base, href)
     if not headers:
