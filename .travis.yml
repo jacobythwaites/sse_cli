@@ -4,7 +4,7 @@ python:
   - "3.6"
 before_install:
   - sudo apt-get install -y xsltproc pandoc
-  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F3E07576
+  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C58A47E1
   - sudo add-apt-repository 'deb [arch=amd64] http://sparkl.release.s3.amazonaws.com xenial main'
   - sudo apt-get update
   - sudo apt-get install -y sse
