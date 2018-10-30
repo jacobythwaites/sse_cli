@@ -8,4 +8,10 @@ before_install:
   - sudo add-apt-repository 'deb [arch=amd64] http://sparkl.release.s3.amazonaws.com xenial main'
   - sudo apt-get update
   - sudo apt-get install -y sse
-script: make lint compile
+script:
+  - make lint compile
+  - sse start ./sse1
+  - sleep 5
+  - python -m sparkl_cli connect http://localhost:8000
+  - echo password | python -m sparkl_cli login -r test@localhost password
+  - TEST_SSE=http://localhost:8000 TEST_USER=test@localhost TEST_PASS=password make test
