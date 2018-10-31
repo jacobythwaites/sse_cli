@@ -31,6 +31,15 @@ def parse_args(subparser):
     Module-specific subcommand arguments.
     """
     subparser.add_argument(
+        "-v", "--verify",
+        type=str,
+        default=True,
+        help="""
+            (https only) path to sse CA certificate if required,
+            or 'false' to disable certificate validation.
+            """)
+
+    subparser.add_argument(
         "url",
         nargs="?",
         type=str,
@@ -50,11 +59,13 @@ def get_connections(args):
         for alias in connections:
             connection = connections[alias]
             url = connection["url"]
+            verify = connection["verify"]
             item = {
                 "tag": "connection",
                 "attr": {
                     "alias": alias,
-                    "url": url
+                    "url": url,
+                    "verify": verify
                 }
             }
             content.append(item)
@@ -87,8 +98,19 @@ def new_connection(args):
             "Alias {Alias} is already open".format(
                 Alias=args.alias))
 
+    verify = False
+    if args.verify:
+        if args.verify == "false":
+            verify = False
+        else:
+            verify = args.verify
+
+    if not verify:
+        print("WARNING: SSE CERTIFICATE VALIDATION DISABLED")
+
     connection = {
-        "url": args.url}
+        "url": args.url,
+        "verify": verify}
     connections[args.alias] = connection
     state["connections"] = connections
     set_state(args, state)
