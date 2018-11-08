@@ -305,6 +305,14 @@ def sync_request(
 
     Note that an HTTP status code other than 2xx is false-y
     in Python.
+
+    If using HTTPS:
+
+    For server authentication, args.verify can point to a
+    CA cert trusted by this client in PEM format.
+
+    For client authentication, args.cert can point to a
+    client key plus cert signed by the server in PEM format.
     """
     connection = get_connection(args)
 
@@ -315,10 +323,12 @@ def sync_request(
     session.cookies = unpickle_cookies(args)
 
     base = connection.get("url")
+
     verify = connection.get("verify")
     if not verify:
         urllib3.disable_warnings(
             urllib3.exceptions.InsecureRequestWarning)
+    cert = connection.get("cert")
 
     request_url = urljoin(base, href)
     if not headers:
@@ -331,7 +341,8 @@ def sync_request(
             headers=headers,
             params=params,
             timeout=timeout,
-            verify=verify)
+            verify=verify,
+            cert=cert)
 
     elif method.upper() == "POST":
         response = session.post(
@@ -340,7 +351,8 @@ def sync_request(
             params=params,
             data=data,
             timeout=timeout,
-            verify=verify)
+            verify=verify,
+            cert=cert)
 
     elif method.upper() == "DELETE":
         response = session.delete(
@@ -348,7 +360,8 @@ def sync_request(
             headers=headers,
             params=params,
             timeout=timeout,
-            verify=verify)
+            verify=verify,
+            cert=cert)
 
     pickle_cookies(session.cookies)
     return response

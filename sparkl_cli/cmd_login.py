@@ -23,6 +23,7 @@ from sparkl_cli.CliException import (
     CliException)
 
 from sparkl_cli.common import (
+    get_connection,
     del_current_folder,
     sync_request)
 
@@ -50,31 +51,20 @@ def parse_args(subparser):
         help="user password or access token secret")
 
 
-def show_login(args):
-    """
-    Shows the logged in user on the connection specified in
-    the args, or default.
-    """
-    response = sync_request(
-        args, "GET", "sse_cfg/user")
-
-    if response:
-        return response.json()
-
-    return None
-
-
 def login(args):
     """
     Logs in the specified user, prompting for password
     if necessary.
     """
-    if not args.password:
-        args.password = getpass.getpass("Password: ")
+    connection = get_connection(args)
+    data = {}
+    if not connection["cert"]:
+        if not args.password:
+            args.password = getpass.getpass("Password: ")
 
-    data = {
-        "email": args.user,
-        "password": args.password}
+        data = {
+            "email": args.user,
+            "password": args.password}
 
     if args.token:
         data["token"] = args.token
@@ -119,12 +109,10 @@ def register(args):
 
 def command(args):
     """
-    Logs in or registers the user. If no user specified, shows
-    the current login status.
+    Logs in or registers the user. If the connection was established
+    with a TLS client certificate (using the --cert option), it provides
+    the credentials and no username or password should be specified.
     """
-    if not args.user:
-        return show_login(args)
-
     del_current_folder(args)
 
     if args.register:

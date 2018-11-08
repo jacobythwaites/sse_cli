@@ -35,8 +35,17 @@ def parse_args(subparser):
         type=str,
         default=True,
         help="""
-            (https only) path to sse CA certificate if required,
-            or 'false' to disable certificate validation.
+            (https only) path to server CA certificate if required,
+            or 'false' to disable server certificate validation.
+            """)
+
+    subparser.add_argument(
+        "-c", "--cert",
+        type=str,
+        default=None,
+        help="""
+            (https only) path to PEM file containing the client
+            key and certificate.
             """)
 
     subparser.add_argument(
@@ -60,12 +69,14 @@ def get_connections(args):
             connection = connections[alias]
             url = connection["url"]
             verify = connection["verify"]
+            cert = connection["cert"]
             item = {
                 "tag": "connection",
                 "attr": {
                     "alias": alias,
-                    "url": url,
-                    "verify": verify
+                    "url":  url,
+                    "verify": verify,
+                    "cert": cert
                 }
             }
             content.append(item)
@@ -110,7 +121,8 @@ def new_connection(args):
 
     connection = {
         "url": args.url,
-        "verify": verify}
+        "verify": verify,
+        "cert": args.cert}
     connections[args.alias] = connection
     state["connections"] = connections
     set_state(args, state)
@@ -134,7 +146,8 @@ def new_connection(args):
 def command(args):
     """
     Opens a new connection if url is specified, otherwise shows
-    existing connections if any.
+    existing connections if any. HTTPS server cert and client
+    key+cert (if specified by flags) should be in PEM format.
     """
     if args.url:
         return new_connection(args)

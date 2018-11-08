@@ -68,6 +68,7 @@ from sparkl_cli import (
     cmd_stop,
     cmd_tree,
     cmd_undo,
+    cmd_user,
     cmd_vars)
 
 
@@ -140,6 +141,9 @@ MODULES = (
 
     ("undo", cmd_undo,
      "undo last change"),
+
+    ("user", cmd_user,
+     "show current user details"),
 
     ("vars", cmd_vars,
      "set field variables"))
