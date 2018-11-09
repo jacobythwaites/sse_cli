@@ -54,9 +54,12 @@ def parse_args(subparser):
 def login(args):
     """
     Logs in the specified user, prompting for password
-    if necessary.
+    if necessary. If the token name is provided, then
+    the password must match that token's value as set
+    up on the user's account.
     """
     connection = get_connection(args)
+
     data = {}
     if not connection["cert"]:
         if not args.password:
@@ -66,8 +69,8 @@ def login(args):
             "email": args.user,
             "password": args.password}
 
-    if args.token:
-        data["token"] = args.token
+        if args.token:
+            data["token"] = args.token
 
     response = sync_request(
         args, "POST", "sse_cfg/user",
@@ -86,18 +89,22 @@ def register(args):
     Registers the specified user, prompting twice for
     password if necessary.
     """
-    if not args.password:
-        args.password = getpass.getpass("Password: ")
-        check = getpass.getpass("Repeat: ")
-        if args.password != check:
-            raise CliException(
-                "Passwords do not match")
+    connection = get_connection(args)
+    data = {}
+    if not connection["cert"]:
+        if not args.password:
+            args.password = getpass.getpass("Password: ")
+            check = getpass.getpass("Repeat: ")
+            if args.password != check:
+                raise CliException(
+                    "Passwords do not match")
+            data = {
+                "email": args.user,
+                "password": args.password}
 
     response = sync_request(
         args, "POST", "sse_cfg/register",
-        data={
-            "email": args.user,
-            "password": args.password})
+        data=data)
 
     if response:
         return response.json()
@@ -109,11 +116,19 @@ def register(args):
 
 def command(args):
     """
-    Logs in or registers the user. If the connection was established
-    with a TLS client certificate (using the --cert option), it provides
-    the credentials and no username or password should be specified.
+    Logs in or registers the user using client certificate or
+    username/password.
     """
     del_current_folder(args)
+
+    connection = get_connection(args)
+    if connection["cert"] and args.user:
+        raise CliException(
+            "Do not specify user with client certificate")
+
+    if not connection["cert"] and not args.user:
+        raise CliException(
+            "Must specify user")
 
     if args.register:
         return register(args)
