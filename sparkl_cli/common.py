@@ -331,8 +331,6 @@ def sync_request(
 
     # Verify is boolean or path to server cert PEM.
     # Cert is None or path to client key+cert PEM.
-    verify = False
-    cert = None
     if secure:
         if verify and server:
             verify = server
@@ -453,7 +451,7 @@ def get_websocket(args, ws_path):
     server = connection.get("server")
     verify = connection.get("verify")
 
-    (scheme, netloc, _, _, _) = urlsplit(http_url)
+    (_, netloc, _, _, _) = urlsplit(http_url)
     ws_scheme = "ws"
     if secure:
         ws_scheme = "wss"
@@ -470,7 +468,6 @@ def get_websocket(args, ws_path):
     # Cert_reqs is ssl.CERT_NONE or ssl.CERT_REQUIRED.
     # Ca_certs is None or path to server cert PEM.
     # Cert file for client is None or path to client key+cert PEM.
-    certfile = None
     cert_reqs = ssl.CERT_NONE
     ca_certs = None
     if secure:
