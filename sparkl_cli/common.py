@@ -325,26 +325,21 @@ def sync_request(
 
     base = connection.get("url")
     secure = connection.get("secure")
+    client = connection.get("client")
+    server = connection.get("server")
+    verify = connection.get("verify")
 
     # Verify is boolean or path to server cert PEM.
     # Cert is None or path to client key+cert PEM.
     verify = False
     cert = None
     if secure:
-        client = connection.get("client")
-        server = connection.get("server")
-        verify = connection.get("verify")
-
         if verify and server:
             verify = server
 
-        cert = None
-        if client:
-            cert = client
-
-    if secure and not verify:
-        urllib3.disable_warnings(
-            urllib3.exceptions.InsecureRequestWarning)
+        if not verify:
+            urllib3.disable_warnings(
+                urllib3.exceptions.InsecureRequestWarning)
 
     request_url = urljoin(base, href)
     if not headers:
@@ -358,7 +353,7 @@ def sync_request(
             params=params,
             timeout=timeout,
             verify=verify,
-            cert=cert)
+            cert=client)
 
     elif method.upper() == "POST":
         response = session.post(
@@ -368,7 +363,7 @@ def sync_request(
             data=data,
             timeout=timeout,
             verify=verify,
-            cert=cert)
+            cert=client)
 
     elif method.upper() == "DELETE":
         response = session.delete(
@@ -377,7 +372,7 @@ def sync_request(
             params=params,
             timeout=timeout,
             verify=verify,
-            cert=cert)
+            cert=client)
 
     pickle_cookies(session.cookies)
     return response
@@ -451,12 +446,16 @@ def get_websocket(args, ws_path):
     a completely separate library from requests.
     """
     connection = get_connection(args)
-    http_url = connection.get("url")
-    (scheme, netloc, _, _, _) = urlsplit(http_url)
 
-    if scheme == "http":
-        ws_scheme = "ws"
-    else:
+    http_url = connection.get("url")
+    secure = connection.get("secure")
+    client = connection.get("client")
+    server = connection.get("server")
+    verify = connection.get("verify")
+
+    (scheme, netloc, _, _, _) = urlsplit(http_url)
+    ws_scheme = "ws"
+    if secure:
         ws_scheme = "wss"
 
     ws_url = urlunparse((ws_scheme, netloc, ws_path, "", "", ""))
@@ -468,22 +467,21 @@ def get_websocket(args, ws_path):
         session = cookiedict[SESSION_COOKIE]
         cookie = SESSION_COOKIE + "=" + session
 
-    client = connection.get("client")
-    server = connection.get("server")
-    verify = connection.get("verify")
-
     # Cert_reqs is ssl.CERT_NONE or ssl.CERT_REQUIRED.
     # Ca_certs is None or path to server cert PEM.
+    # Cert file for client is None or path to client key+cert PEM.
+    certfile = None
     cert_reqs = ssl.CERT_NONE
     ca_certs = None
-    if verify:
-        cert_reqs = ssl.CERT_REQUIRED
-        if server:
-            ca_certs = server
+    if secure:
+        if verify:
+            cert_reqs = ssl.CERT_REQUIRED
+            if server:
+                ca_certs = server
 
     sslopt = {
         "keyfile": None,
-        "certfile": None,
+        "certfile": client,
         "cert_reqs": cert_reqs,
         "ca_certs": ca_certs
     }
