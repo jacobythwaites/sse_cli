@@ -95,7 +95,7 @@ MODULES = (
      "listen for events on any configuration object"),
 
     ("login", cmd_login,
-     "login user or show current login"),
+     "login or register user"),
 
     ("logout", cmd_logout,
      "logout user"),

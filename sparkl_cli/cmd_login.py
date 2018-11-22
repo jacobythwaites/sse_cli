@@ -98,9 +98,10 @@ def register(args):
             if args.password != check:
                 raise CliException(
                     "Passwords do not match")
-            data = {
-                "email": args.user,
-                "password": args.password}
+
+        data = {
+            "email": args.user,
+            "password": args.password}
 
     response = sync_request(
         args, "POST", "sse_cfg/register",
@@ -116,8 +117,9 @@ def register(args):
 
 def command(args):
     """
-    Logs in or registers the user using client certificate or
-    username/password.
+    Logs in or registers a user. If the connection uses a
+    client certificate (connect --client) then the CN is the user
+    name. Otherwise, user name and password must be supplied.
     """
     del_current_folder(args)
 
