@@ -468,16 +468,18 @@ def get_websocket(args, ws_path):
         session = cookiedict[SESSION_COOKIE]
         cookie = SESSION_COOKIE + "=" + session
 
+    client = connection.get("client")
+    server = connection.get("server")
     verify = connection.get("verify")
-    cert = connection.get("cert")
 
+    # Cert_reqs is ssl.CERT_NONE or ssl.CERT_REQUIRED.
+    # Ca_certs is None or path to server cert PEM.
     cert_reqs = ssl.CERT_NONE
     ca_certs = None
     if verify:
         cert_reqs = ssl.CERT_REQUIRED
-        # Verify can be path to a PEM file holding certs.
-        if not verify is True:
-            ca_certs = verify
+        if server:
+            ca_certs = server
 
     sslopt = {
         "keyfile": None,

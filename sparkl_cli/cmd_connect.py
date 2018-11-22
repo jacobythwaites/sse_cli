@@ -123,17 +123,36 @@ def new_connection(args):
             "Alias {Alias} is already open".format(
                 Alias=args.alias))
 
+    verify = args.verify
+
     client = args.client
     if client:
         client = os.path.abspath(client)
+        if not os.path.isfile(client):
+            raise CliException("No --client at {client}".format(
+                client=client))
 
     server = args.server
     if server:
         server = os.path.abspath(server)
+        if not os.path.isfile(server):
+            raise CliException("No --server at {server}".format(
+                server=server))
 
     secure = False
     if args.url.startswith("https:"):
         secure = True
+
+    if not secure:
+        if verify:
+            verify = False
+            print("WARNING: --verify ignored")
+        if client:
+            client = None
+            print("WARNING: --client ignored")
+        if server:
+            server = None
+            print("WARNING: --server ignored")
 
     if secure and not args.verify:
         print("WARNING: --verify is off, server validation disabled")
@@ -143,7 +162,7 @@ def new_connection(args):
     connection = {
         "url": args.url,
         "secure": secure,
-        "verify": args.verify,
+        "verify": verify,
         "client": client,
         "server": server}
     connections[args.alias] = connection
