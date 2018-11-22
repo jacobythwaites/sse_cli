@@ -54,7 +54,7 @@ def close_connection(args, alias):
 
 def command(args):
     """
-    Closes the connection with the given alias, if already open.
+    Closes the connection, if already open.
     If --all is specified, closes all connections.
     """
     connections = get_state(args).get("connections", {})

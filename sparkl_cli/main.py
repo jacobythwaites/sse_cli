@@ -190,13 +190,13 @@ def build_parser():
         "-a", "--alias",
         type=str,
         default="default",
-        help="optional alias for multiple connections")
+        help="optional alias for multiple connections in local session")
 
     parser.add_argument(
         "-s", "--session",
         type=int,
         default=get_default_session(),
-        help="optional session id, defaults to invoking pid")
+        help="optional local session id, defaults to ancestor shell pid")
 
     parser.add_argument(
         "-t", "--timeout",

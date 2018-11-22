@@ -26,6 +26,7 @@ import json
 import posixpath
 import subprocess
 import tempfile
+import ssl
 from http.cookiejar import LWPCookieJar
 import websocket
 import psutil
@@ -323,12 +324,27 @@ def sync_request(
     session.cookies = unpickle_cookies(args)
 
     base = connection.get("url")
+    secure = connection.get("secure")
 
-    verify = connection.get("verify")
-    if not verify:
+    # Verify is boolean or path to server cert PEM.
+    # Cert is None or path to client key+cert PEM.
+    verify = False
+    cert = None
+    if secure:
+        client = connection.get("client")
+        server = connection.get("server")
+        verify = connection.get("verify")
+
+        if verify and server:
+            verify = server
+
+        cert = None
+        if client:
+            cert = client
+
+    if secure and not verify:
         urllib3.disable_warnings(
             urllib3.exceptions.InsecureRequestWarning)
-    cert = connection.get("cert")
 
     request_url = urljoin(base, href)
     if not headers:
@@ -431,7 +447,8 @@ def get_websocket(args, ws_path):
     """
     Convenience function to return a websocket client
     connection with session cookie using the supplied
-    path.
+    path. The websocket functionality is annoyingly in
+    a completely separate library from requests.
     """
     connection = get_connection(args)
     http_url = connection.get("url")
@@ -451,7 +468,25 @@ def get_websocket(args, ws_path):
         session = cookiedict[SESSION_COOKIE]
         cookie = SESSION_COOKIE + "=" + session
 
-    ws = websocket.WebSocket()
+    verify = connection.get("verify")
+    cert = connection.get("cert")
+
+    cert_reqs = ssl.CERT_NONE
+    ca_certs = None
+    if verify:
+        cert_reqs = ssl.CERT_REQUIRED
+        # Verify can be path to a PEM file holding certs.
+        if not verify is True:
+            ca_certs = verify
+
+    sslopt = {
+        "keyfile": None,
+        "certfile": None,
+        "cert_reqs": cert_reqs,
+        "ca_certs": ca_certs
+    }
+
+    ws = websocket.WebSocket(sslopt=sslopt)
     ws.connect(ws_url, cookie=cookie)
     return ws
 

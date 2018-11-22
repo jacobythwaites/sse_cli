@@ -17,6 +17,8 @@ Open command implementation.
 """
 from __future__ import print_function
 
+import os
+
 from sparkl_cli.CliException import (
     CliException)
 
@@ -32,20 +34,28 @@ def parse_args(subparser):
     """
     subparser.add_argument(
         "-v", "--verify",
-        type=str,
-        default=True,
+        action="store_true",
+        default=False,
         help="""
-            (https only) path to server CA certificate if required,
-            or 'false' to disable server certificate validation.
+            (https only) verify server using default
+            authorities, or --server cert if provided.
             """)
 
     subparser.add_argument(
-        "-c", "--cert",
+        "-c", "--client",
         type=str,
-        default=None,
         help="""
             (https only) path to PEM file containing the client
-            key and certificate.
+            key with certificate accepted by the server.
+            """)
+
+    subparser.add_argument(
+        "-s", "--server",
+        type=str,
+        help="""
+            (https only) path to PEM file containing server certificate
+            authority. Only required if not using default
+            authorities and --verify is enabled.
             """)
 
     subparser.add_argument(
@@ -68,15 +78,19 @@ def get_connections(args):
         for alias in connections:
             connection = connections[alias]
             url = connection["url"]
+            secure = connection["secure"]
             verify = connection["verify"]
-            cert = connection["cert"]
+            client = connection["client"]
+            server = connection["server"]
             item = {
                 "tag": "connection",
                 "attr": {
                     "alias": alias,
                     "url":  url,
+                    "secure": secure,
                     "verify": verify,
-                    "cert": cert
+                    "client": client,
+                    "server": server
                 }
             }
             content.append(item)
@@ -109,20 +123,29 @@ def new_connection(args):
             "Alias {Alias} is already open".format(
                 Alias=args.alias))
 
-    verify = False
-    if args.verify:
-        if args.verify == "false":
-            verify = False
-        else:
-            verify = args.verify
+    client = args.client
+    if client:
+        client = os.path.abspath(client)
 
-    if not verify:
-        print("WARNING: SSE CERTIFICATE VALIDATION DISABLED")
+    server = args.server
+    if server:
+        server = os.path.abspath(server)
+
+    secure = False
+    if args.url.startswith("https:"):
+        secure = True
+
+    if secure and not args.verify:
+        print("WARNING: --verify is off, server validation disabled")
+        if args.server:
+            print("WARNING: --server certificate path ignored")
 
     connection = {
         "url": args.url,
-        "verify": verify,
-        "cert": args.cert}
+        "secure": secure,
+        "verify": args.verify,
+        "client": client,
+        "server": server}
     connections[args.alias] = connection
     state["connections"] = connections
     set_state(args, state)

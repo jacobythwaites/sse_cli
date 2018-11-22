@@ -61,7 +61,7 @@ def login(args):
     connection = get_connection(args)
 
     data = {}
-    if not connection["cert"]:
+    if not connection["client"]:
         if not args.password:
             args.password = getpass.getpass("Password: ")
 
@@ -91,7 +91,7 @@ def register(args):
     """
     connection = get_connection(args)
     data = {}
-    if not connection["cert"]:
+    if not connection["client"]:
         if not args.password:
             args.password = getpass.getpass("Password: ")
             check = getpass.getpass("Repeat: ")
@@ -122,11 +122,11 @@ def command(args):
     del_current_folder(args)
 
     connection = get_connection(args)
-    if connection["cert"] and args.user:
+    if connection["client"] and args.user:
         raise CliException(
             "Do not specify user with client certificate")
 
-    if not connection["cert"] and not args.user:
+    if not connection["client"] and not args.user:
         raise CliException(
             "Must specify user")
 
