@@ -432,8 +432,8 @@ def split_path(path):
         else:
             path = "/" + "/".join(steps[1:])
         return (user, path)
-    else:
-        return (None, path)
+
+    return (None, path)
 
 
 def get_websocket(args, ws_path):

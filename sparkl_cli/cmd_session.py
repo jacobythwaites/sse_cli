@@ -25,7 +25,6 @@ def parse_args(_subparser):
     """
     Adds the module-specific subcommand arguments.
     """
-    pass
 
 
 def command(args):
