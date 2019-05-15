@@ -335,7 +335,65 @@
       <span class="name">
         <xsl:value-of select="@name"/>
       </span>
+
+      <!-- Grants appear in header. -->
+      <xsl:if test="grant">
+        <grants>
+          <xsl:apply-templates select="grant"/>
+        </grants>
+      </xsl:if>
+
     </header>
+  </xsl:template>
+
+  <!--
+    Grant.
+  -->
+  <xsl:template match="grant">
+    <xsl:copy>
+      <to>
+        <xsl:value-of select="@to"/>
+      </to>
+
+      <permission>
+        <read>
+          <xsl:choose>
+            <xsl:when test="contains(@permission,'r')">
+              <xsl:attribute name="class">true</xsl:attribute>
+              <xsl:text>r</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>-</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </read>
+
+        <write>
+         <xsl:choose>
+            <xsl:when test="contains(@permission,'w')">
+              <xsl:attribute name="class">true</xsl:attribute>
+              <xsl:text>w</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>-</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </write>
+
+        <execute>
+         <xsl:choose>
+            <xsl:when test="contains(@permission,'x')">
+              <xsl:attribute name="class">true</xsl:attribute>
+              <xsl:text>x</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>-</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </execute>
+      </permission>
+
+    </xsl:copy>
   </xsl:template>
 
   <!--

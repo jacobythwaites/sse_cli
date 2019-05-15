@@ -1,1 +1,34 @@
-<folder name="TestPublicRest"><grant to="*" permission="x"/><service name="REST" provision="rest"/><service name="Sequencer" provision="sequencer"/><field name="NO"/><field name="YES"/><field name="ITERATE"/><field name="n" type="integer"/><field name="div" type="integer"/><mix name="Mix"><solicit name="CheckPrime" service="Sequencer" clients="REST" fields="n"><response name="Yes" fields="YES"/><response name="No" fields="NO"/></solicit><request name="FirstDivisor" service="REST" fields="n"><reply name="Ok" fields="div"/></request><notify name="Notify" fields="NO" service="Sequencer"/><consume name="Consume" service="REST" fields="YES"/><request name="Test" service="REST" fields="div n"><reply name="No" fields="NO"/><reply name="Iterate" fields="ITERATE"/></request><consume name="Iterate" service="REST" fields="ITERATE div n"><reply name="Next" fields="div n"/><reply name="Stop" fields="YES"/></consume></mix></folder>
+<folder name="TestPublicRest">
+  <grant permission="x" to="*"/>
+  <grant to="someone@foo.bar" permission="rx"/>
+  <prop name="Description">
+Splendid test.
+  </prop>
+  <service name="REST" provision="rest"/>
+  <service name="Sequencer" provision="sequencer"/>
+  <field name="NO"/>
+  <field name="YES"/>
+  <field name="ITERATE"/>
+  <field name="n" type="integer"/>
+  <field name="div" type="integer"/>
+  <mix name="Mix">
+    <grant to="*@sparkl.com" permission="rwx"/>
+    <solicit clients="REST" fields="n" name="CheckPrime" service="Sequencer">
+      <response fields="YES" name="Yes"/>
+      <response fields="NO" name="No"/>
+    </solicit>
+    <request fields="n" name="FirstDivisor" service="REST">
+      <reply fields="div" name="Ok"/>
+    </request>
+    <notify fields="NO" name="Notify" service="Sequencer"/>
+    <consume fields="YES" name="Consume" service="REST"/>
+    <request fields="div n" name="Test" service="REST">
+      <reply fields="NO" name="No"/>
+      <reply fields="ITERATE" name="Iterate"/>
+    </request>
+    <consume fields="ITERATE div n" name="Iterate" service="REST">
+      <reply fields="div n" name="Next"/>
+      <reply fields="YES" name="Stop"/>
+    </consume>
+  </mix>
+</folder>

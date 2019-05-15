@@ -23,6 +23,7 @@ from sparkl_cli.CliException import (
     CliException)
 
 from sparkl_cli.common import (
+    get_connection,
     del_current_folder,
     sync_request)
 
@@ -50,34 +51,26 @@ def parse_args(subparser):
         help="user password or access token secret")
 
 
-def show_login(args):
-    """
-    Shows the logged in user on the connection specified in
-    the args, or default.
-    """
-    response = sync_request(
-        args, "GET", "sse_cfg/user")
-
-    if response:
-        return response.json()
-
-    return None
-
-
 def login(args):
     """
     Logs in the specified user, prompting for password
-    if necessary.
+    if necessary. If the token name is provided, then
+    the password must match that token's value as set
+    up on the user's account.
     """
-    if not args.password:
-        args.password = getpass.getpass("Password: ")
+    connection = get_connection(args)
 
-    data = {
-        "email": args.user,
-        "password": args.password}
+    data = {}
+    if not connection["client"]:
+        if not args.password:
+            args.password = getpass.getpass("Password: ")
 
-    if args.token:
-        data["token"] = args.token
+        data = {
+            "email": args.user,
+            "password": args.password}
+
+        if args.token:
+            data["token"] = args.token
 
     response = sync_request(
         args, "POST", "sse_cfg/user",
@@ -96,18 +89,23 @@ def register(args):
     Registers the specified user, prompting twice for
     password if necessary.
     """
-    if not args.password:
-        args.password = getpass.getpass("Password: ")
-        check = getpass.getpass("Repeat: ")
-        if args.password != check:
-            raise CliException(
-                "Passwords do not match")
+    connection = get_connection(args)
+    data = {}
+    if not connection["client"]:
+        if not args.password:
+            args.password = getpass.getpass("Password: ")
+            check = getpass.getpass("Repeat: ")
+            if args.password != check:
+                raise CliException(
+                    "Passwords do not match")
+
+        data = {
+            "email": args.user,
+            "password": args.password}
 
     response = sync_request(
         args, "POST", "sse_cfg/register",
-        data={
-            "email": args.user,
-            "password": args.password})
+        data=data)
 
     if response:
         return response.json()
@@ -119,13 +117,20 @@ def register(args):
 
 def command(args):
     """
-    Logs in or registers the user. If no user specified, shows
-    the current login status.
+    Logs in or registers a user. If the connection uses a
+    client certificate (connect --client) then the CN is the user
+    name. Otherwise, user name and password must be supplied.
     """
-    if not args.user:
-        return show_login(args)
-
     del_current_folder(args)
+
+    connection = get_connection(args)
+    if connection["client"] and args.user:
+        raise CliException(
+            "Do not specify user with client certificate")
+
+    if not connection["client"] and not args.user:
+        raise CliException(
+            "Must specify user")
 
     if args.register:
         return register(args)

@@ -13,31 +13,25 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-Session command implementation.
+Show user command implementation.
 """
 from __future__ import print_function
 
 from sparkl_cli.common import (
-    get_working_dir)
+    sync_request)
 
 
 def parse_args(_subparser):
     """
-    Adds the module-specific subcommand arguments.
+    Adds module-specific subcommand arguments.
     """
 
 
 def command(args):
     """
-    Shows the session number, which can be used by another
-    process invoking `sparkl -s SESSION`.
+    Shows the current user details.
     """
-    result = {
-        "tag": "session",
-        "attr": {
-            "id": args.session,
-            "dir": get_working_dir(args)
-        }
-    }
+    response = sync_request(
+        args, "GET", "sse_cfg/user")
 
-    return result
+    return response.json()

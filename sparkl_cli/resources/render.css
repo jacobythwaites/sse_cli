@@ -8,6 +8,7 @@ body {
 
 header {
   display: block;
+  text-align: left;
   padding: 5px 10px 5px 10px;
   overflow: hidden;
 }
@@ -20,7 +21,7 @@ content {
   padding-right: 10px;
 }
 
-props, services, fields, operations, folders {
+services, fields, operations, folders {
   display: block;
   overflow: hidden;
 }
@@ -37,6 +38,39 @@ prop {
 prop > header {
   background: #eeeeee;
   color: #333333;
+}
+
+grants {
+  float: right;
+}
+
+grant {
+  font-size: small;
+  margin-left: 10px;
+  padding: 0 5px;
+}
+
+grant permission {
+  font-family: Consolas, monospace;
+  border: 1px solid #eeeeee;
+  border-radius: 3px;
+  background-color: #ffffff;
+  padding: 0 3px;
+}
+
+grant to {
+  padding: 0 5px 0 0;
+}
+
+grant read,
+grant write,
+grant execute {
+  display: inline-block;
+  letter-spacing: 2px;
+}
+
+grant .true {
+  font-weight: bold;
 }
 
 service {
